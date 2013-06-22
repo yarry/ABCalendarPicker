@@ -12,6 +12,11 @@
 
 @interface ABCalendarPickerDefaultStyleProvider : NSObject <ABCalendarPickerStyleProviderProtocol>
 
+@property(nonatomic) UIColor *tilesBackgroundColor;
+@property(nonatomic) CGFloat gradientBarHeight;
+@property(nonatomic) CGFloat buttonAspectRatio;
+
+
 @property(nonatomic) UIColor *textColor;
 @property(nonatomic) UIColor *textShadowColor;
 @property(nonatomic) UIImage *patternImageForGradientBar;
@@ -21,6 +26,9 @@
 @property(nonatomic) UIFont *columnFont;
 @property(nonatomic) UIFont *tileTitleFont;
 @property(nonatomic) UIFont *tileDotFont;
+
+@property(nonatomic) UIColor *titleTextColor;
+@property(nonatomic) UIColor *titleTextShadowColor;
 
 - (UIControl *)calendarPicker:(ABCalendarPicker *)calendarPicker
              cellViewForTitle:(NSString *)cellTitle
@@ -54,5 +62,7 @@
 @property(nonatomic) CGSize selectedTextShadowPosition;
 
 @property(nonatomic) NSInteger maxNumberOfDots;
+
+
 
 @end

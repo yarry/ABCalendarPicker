@@ -9,10 +9,17 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 
+@class ABCalendarPicker;
+
 @protocol ABCalendarPickerStyleProviderProtocol <NSObject>
 
 @property(readonly, nonatomic) UIColor *textColor;
 @property(readonly, nonatomic) UIColor *textShadowColor;
+
+@property(readonly, nonatomic) UIColor *titleTextColor;
+@property(readonly, nonatomic) UIColor *titleTextShadowColor;
+
+@property(readonly, nonatomic) UIColor *tilesBackgroundColor;
 @property(readonly, nonatomic) UIImage *patternImageForGradientBar;
 
 @property(readonly, nonatomic) UIFont *titleFontForColumnTitlesVisible;
@@ -32,4 +39,8 @@
               andState:(ABCalendarPickerState)state;
 
 - (CGFloat)buttonAspectRatioForState:(ABCalendarPickerState)state;
+
+- (CGFloat)gradientBarHeight;
+
+- (UIView *)calendarPicker:(ABCalendarPicker *)picker arrowViewForAnimation:(ABCalendarPickerAnimation)animation andState:(ABCalendarPickerState)state;
 @end

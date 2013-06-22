@@ -61,7 +61,7 @@
 		25DDA8EE15AA2A910049B532 /* TileSelected.png in Resources */ = {isa = PBXBuildFile; fileRef = 25DDA8B715AA23C20049B532 /* TileSelected.png */; };
 		25DDA8EF15AA2A910049B532 /* TileToday.png in Resources */ = {isa = PBXBuildFile; fileRef = 25DDA8B815AA23C20049B532 /* TileToday.png */; };
 		25DDA8F015AA2A910049B532 /* TileTodaySelected.png in Resources */ = {isa = PBXBuildFile; fileRef = 25DDA8B915AA23C20049B532 /* TileTodaySelected.png */; };
-		25DDA8F415AA2AD60049B532 /* ABViewPool.h in Headers */ = {isa = PBXBuildFile; fileRef = 25DDA8F215AA2AD60049B532 /* ABViewPool.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25DDA8F415AA2AD60049B532 /* ABViewPool.h in Headers */ = {isa = PBXBuildFile; fileRef = 25DDA8F215AA2AD60049B532 /* ABViewPool.h */; settings = {ATTRIBUTES = (); }; };
 		25DDA8F515AA2AD60049B532 /* ABViewPool.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DDA8F315AA2AD60049B532 /* ABViewPool.m */; };
 /* End PBXBuildFile section */
 

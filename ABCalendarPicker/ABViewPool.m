@@ -25,7 +25,7 @@
     return _objects;
 }
 
-- (UIView *)giveExistingOrCreateNewWith:(ObjectInitBlock)block
+- (id)giveExistingOrCreateNewWith:(ObjectInitBlock)block
 {
     for (int i = 0; i < self.objects.count; i++) {
         NSInteger index = (self.beginIndex + i) % self.objects.count;

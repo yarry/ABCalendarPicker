@@ -13,7 +13,7 @@ typedef id (^ObjectInitBlock)();
 
 @interface ABViewPool : NSObject
 
-- (UIView *)giveExistingOrCreateNewWith:(ObjectInitBlock)block;
+- (id)giveExistingOrCreateNewWith:(ObjectInitBlock)block;
 
 - (void)clear;
 

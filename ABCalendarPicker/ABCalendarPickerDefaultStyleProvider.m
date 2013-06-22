@@ -11,11 +11,20 @@
 #import "ABCalendarPickerDefaultStyleProvider.h"
 #import "UIMyButton.h"
 
+#define UP_ARROW_STRING @"▲"
+#define DOWN_ARROW_STRING @"▼"
+#define LEFT_ARROW_STRING @"◀"
+#define RIGHT_ARROW_STRING @"▶"
+
 @interface ABCalendarPickerDefaultStyleProvider ()
 @property(strong, nonatomic) ABViewPool *controlsPool;
 @end
 
 @implementation ABCalendarPickerDefaultStyleProvider
+{
+    ABViewPool *_arrowButtonsPool;
+}
+
 
 @synthesize maxNumberOfDots = _maxNumberOfDots;
 @synthesize controlsPool = _controlsPool;
@@ -24,9 +33,9 @@
 @synthesize textShadowColor = _textShadowColor;
 @synthesize patternImageForGradientBar = _patternImageForGradientBar;
 
-@synthesize columnFont = _columnFont;
-@synthesize tileTitleFont = _tileTitleFont;
-@synthesize tileDotFont = _tileDotFont;
+//@synthesize columnFont = _columnFont;
+//@synthesize tileTitleFont = _tileTitleFont;
+//@synthesize tileDotFont = _tileDotFont;
 
 @synthesize normalImage = _normalImage;
 @synthesize selectedImage = _selectedImage;
@@ -44,6 +53,7 @@
 @synthesize normalTextShadowPosition = _normalTextShadowPosition;
 @synthesize disabledTextShadowPosition = _disabledTextShadowPosition;
 @synthesize selectedTextShadowPosition = _selectedTextShadowPosition;
+
 
 - (NSBundle *)frameworkBundle
 {
@@ -72,14 +82,21 @@
     return _controlsPool;
 }
 
+- (ABViewPool *)arrowButtonsPool
+{
+    if (_arrowButtonsPool == nil)
+        _arrowButtonsPool = [[ABViewPool alloc] init];
+    return _arrowButtonsPool;
+}
+
 - (UIColor *)textColor
 {
-    return self.normalTextColor;
+    return _textColor ?: self.normalTextColor;
 }
 
 - (UIColor *)textShadowColor
 {
-    return self.normalTextShadowColor;
+    return _textShadowColor ?: self.normalTextShadowColor;
 }
 
 - (UIFont *)titleFontForColumnTitlesVisible
@@ -98,24 +115,29 @@
 
 - (UIFont *)columnFont
 {
-    if (_columnFont == nil)
-        _columnFont = [UIFont boldSystemFontOfSize:10.0f];
-    return _columnFont;
+    return  _columnFont ?: [UIFont boldSystemFontOfSize:10.0];
 }
 
 - (UIFont *)tileTitleFont
 {
-    if (_tileTitleFont == nil)
-        _tileTitleFont = [UIFont boldSystemFontOfSize:24.0];
-    return _tileTitleFont;
+    return  _tileTitleFont ?: [UIFont boldSystemFontOfSize:24.0];
 }
 
 - (UIFont *)tileDotFont
 {
-    if (_tileDotFont == nil)
-        _tileDotFont = [UIFont boldSystemFontOfSize:20.0];
-    return _tileDotFont;
+    return  _tileDotFont ?: [UIFont boldSystemFontOfSize:20.0];
 }
+
+- (UIColor *)titleTextColor
+{
+    return _titleTextColor ?: self.normalTextColor;
+}
+
+- (UIColor *)titleTextShadowColor
+{
+    return _titleTextShadowColor ?:  self.normalTextShadowColor;
+}
+
 
 - (UIImage *)patternImageForGradientBar
 {
@@ -378,10 +400,6 @@
     button.numberOfDots = MIN(self.maxNumberOfDots, eventsCount);
 }
 
-- (CGFloat)buttonAspectRatio
-{
-    return 1.0f;
-}
 
 - (CGFloat)buttonAspectRatioForState:(ABCalendarPickerState)state
 {
@@ -396,5 +414,53 @@
     }
     return self;
 }
+
+- (UIColor *)tilesBackgroundColor
+{
+    return _tilesBackgroundColor ?: [UIColor colorWithRed:164 / 255. green:167 / 255. blue:176 / 255. alpha:1.0];
+}
+
+- (CGFloat)gradientBarHeight
+{
+    return _gradientBarHeight ?: 50;
+}
+
+- (CGFloat)buttonAspectRatio
+{
+    return _buttonAspectRatio ?: 1;
+}
+
+
+- (UIView *)calendarPicker:(ABCalendarPicker *)picker arrowViewForAnimation:(ABCalendarPickerAnimation)animation andState:(ABCalendarPickerState)state
+{
+    UIButton* arrow = [self.arrowButtonsPool giveExistingOrCreateNewWith:^id {
+            UIButton* button = [UIButton buttonWithType:UIButtonTypeCustom];
+
+            button.titleLabel.font = [UIFont fontWithName:@"Hiragino Mincho ProN" size:20];
+            [button setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
+            [button setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+            [button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            button.titleLabel.shadowOffset = CGSizeMake(0, 1);
+
+            return button;
+        }];
+
+    if (animation == ABCalendarPickerAnimationScrollUp)
+        [arrow setTitle:UP_ARROW_STRING forState:UIControlStateNormal];
+    else if (animation == ABCalendarPickerAnimationScrollLeft)
+        [arrow setTitle:LEFT_ARROW_STRING forState:UIControlStateNormal];
+    else if (animation == ABCalendarPickerAnimationScrollDown)
+        [arrow setTitle:DOWN_ARROW_STRING forState:UIControlStateNormal];
+    else if (animation == ABCalendarPickerAnimationScrollRight)
+        [arrow setTitle:RIGHT_ARROW_STRING forState:UIControlStateNormal];
+
+    [arrow setTitleColor:self.textColor forState:UIControlStateNormal];
+    [arrow setTitleShadowColor:self.textShadowColor forState:UIControlStateNormal];
+
+    return arrow;
+}
+
+
+
 
 @end
