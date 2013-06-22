@@ -31,4 +31,5 @@
             withEvents:(NSInteger)eventsCount
               andState:(ABCalendarPickerState)state;
 
+- (CGFloat)buttonAspect;
 @end

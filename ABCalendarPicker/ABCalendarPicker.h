@@ -90,6 +90,8 @@
 /** Retrieving and setting highlighted date, looks like user-tapped date. */
 @property (readonly,strong,nonatomic) NSDate * highlightedDate;
 
+@property(nonatomic) BOOL multiselect;
+
 - (void)updateStateAnimated:(BOOL)animated;
 
 - (void)setDate:(NSDate*)date andState:(ABCalendarPickerState)state animated:(BOOL)animated;
@@ -100,4 +102,9 @@
 
 - (void)setHighlightedAndSectedDate:(NSDate *)date animated:(BOOL)animated;
 
+- (void)highlightDateFrom:(NSDate *)startDate to:(NSDate *)endDate animated:(BOOL)animated;
+
+- (NSDate *)startDate;
+
+- (NSDate *)endDate;
 @end

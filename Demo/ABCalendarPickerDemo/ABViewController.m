@@ -176,6 +176,8 @@
     
     self.calendarPicker.delegate = self;
     self.calendarPicker.dataSource = self;
+    self.calendarPicker.multiselect = YES;
+
     [self.view addSubview:self.calendarShadow];
     [self calendarPicker:self.calendarPicker animateNewHeight:self.calendarPicker.bounds.size.height];
 

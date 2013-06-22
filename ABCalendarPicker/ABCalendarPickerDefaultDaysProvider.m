@@ -35,7 +35,12 @@
 
 - (NSInteger)canDiffuse
 {
-    return 1;
+    if(self.dateOwner.multiselect) {
+        return 3;
+    }
+    else {
+        return 1;
+    }
 }
 
 - (NSDate *)mainDateBegin
@@ -79,9 +84,11 @@
 }
 
 - (ABCalendarPickerAnimation)animationForLongPrev {
+    return ABCalendarPickerAnimationDisabled;
     return ABCalendarPickerAnimationScrollLeft;
 }
 - (ABCalendarPickerAnimation)animationForLongNext {
+    return ABCalendarPickerAnimationDisabled;
     return ABCalendarPickerAnimationScrollRight;
 }
 
@@ -115,7 +122,11 @@
 
 - (NSInteger)rowsCount
 {
-    return [self.calendar rangeOfUnit:NSWeekCalendarUnit inUnit:NSMonthCalendarUnit forDate:[self.dateOwner highlightedDate]].length;
+    NSInteger rows = [self.calendar rangeOfUnit:NSWeekCalendarUnit inUnit:NSMonthCalendarUnit forDate:[self.dateOwner highlightedDate]].length;
+    if(self.dateOwner.multiselect) {
+        rows+=2;
+    }
+    return rows;
 }
 
 - (NSInteger)columnsCount
@@ -140,6 +151,9 @@
             andColumn:(NSInteger)column 
 {
     NSInteger index = row*7 + column + 1;
+    if(self.dateOwner.multiselect) {
+        index -= 7;
+    }
     
     NSDateComponents * comps = [self.calendar components:NSDayCalendarUnit|NSWeekdayCalendarUnit fromDate:[self.dateOwner highlightedDate]];
     NSInteger highlightedDay = comps.day;

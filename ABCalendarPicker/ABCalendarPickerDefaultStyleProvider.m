@@ -344,6 +344,7 @@
         [button setBackgroundImage:self.normalImage forState:UIControlStateDisabled];
         [button setBackgroundImage:self.selectedImage forState:UIControlStateDisabled | UIControlStateSelected];
         [button setBackgroundImage:self.highlightedImage forState:UIControlStateHighlighted];
+        [button setBackgroundImage:self.highlightedImage forState:UIControlStateDisabled | UIControlStateHighlighted];
         [button setBackgroundImage:self.selectedImage forState:UIControlStateSelected];
         [button setBackgroundImage:self.selectedHighlightedImage forState:UIControlStateSelected | UIControlStateHighlighted];
         
@@ -370,6 +371,12 @@
     UIMyButton * button = (UIMyButton *)control;
     button.numberOfDots = MIN(self.maxNumberOfDots,eventsCount);
 }
+
+- (CGFloat)buttonAspect
+{
+    return 0.9;
+}
+
 
 - (id)init
 {

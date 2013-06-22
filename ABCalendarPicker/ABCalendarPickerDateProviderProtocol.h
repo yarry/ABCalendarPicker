@@ -12,9 +12,11 @@
 @protocol ABCalendarPickerDateOwner
 - (NSDate*)selectedDate;
 - (NSDate*)highlightedDate;
+- (BOOL)multiselect;
 @end
 
 typedef enum {
+    ABCalendarPickerAnimationDisabled,
     ABCalendarPickerAnimationNone,
     ABCalendarPickerAnimationTransition,
     ABCalendarPickerAnimationZoomIn,
@@ -39,7 +41,7 @@ typedef enum {
     ABCalendarPickerAnimationScrollUpFor6Rows = 106,
 } ABCalendarPickerAnimation;
 
-@protocol ABCalendarPickerDateProviderProtocol
+@protocol ABCalendarPickerDateProviderProtocol <NSObject>
 
 @property (weak,nonatomic) id<ABCalendarPickerDateOwner> dateOwner;
 

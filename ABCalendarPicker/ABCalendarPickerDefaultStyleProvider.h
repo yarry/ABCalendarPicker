@@ -32,6 +32,8 @@
             withEvents:(NSInteger)eventsCount
               andState:(ABCalendarPickerState)state;
 
+- (CGFloat)buttonAspect;
+
 @property (nonatomic) UIImage * normalImage;
 @property (nonatomic) UIImage * selectedImage;
 @property (nonatomic) UIImage * highlightedImage;
