@@ -10,12 +10,15 @@
 #import <Foundation/Foundation.h>
 
 @protocol ABCalendarPickerDateOwner
-- (NSDate*)selectedDate;
-- (NSDate*)highlightedDate;
+- (NSDate *)selectedDate;
+
+- (NSDate *)highlightedDate;
+
 - (BOOL)multiselect;
 @end
 
-typedef enum {
+typedef enum
+{
     ABCalendarPickerAnimationDisabled,
     ABCalendarPickerAnimationNone,
     ABCalendarPickerAnimationTransition,
@@ -25,7 +28,7 @@ typedef enum {
     ABCalendarPickerAnimationScrollDown,
     ABCalendarPickerAnimationScrollLeft,
     ABCalendarPickerAnimationScrollRight,
-    
+
     ABCalendarPickerAnimationScrollDownFor6Rows = 94,
     ABCalendarPickerAnimationScrollDownFor5Rows = 95,
     ABCalendarPickerAnimationScrollDownFor4Rows = 96,
@@ -43,46 +46,63 @@ typedef enum {
 
 @protocol ABCalendarPickerDateProviderProtocol <NSObject>
 
-@property (weak,nonatomic) id<ABCalendarPickerDateOwner> dateOwner;
+@property(weak, nonatomic) id <ABCalendarPickerDateOwner> dateOwner;
 
 - (NSInteger)canDiffuse;
 
 - (ABCalendarPickerAnimation)animationForPrev;
+
 - (ABCalendarPickerAnimation)animationForNext;
+
 //@optional
-- (ABCalendarPickerAnimation)animationForZoomInToProvider:(id<ABCalendarPickerDateProviderProtocol>)provider;
-- (ABCalendarPickerAnimation)animationForZoomOutToProvider:(id<ABCalendarPickerDateProviderProtocol>)provider;
+- (ABCalendarPickerAnimation)animationForZoomInToProvider:(id <ABCalendarPickerDateProviderProtocol>)provider;
+
+- (ABCalendarPickerAnimation)animationForZoomOutToProvider:(id <ABCalendarPickerDateProviderProtocol>)provider;
 //- (ABCalendarPickerAnimation)animationForZoomInFromProvider:(id<ABCalendarPickerDateProviderProtocol>)provider;
 //- (ABCalendarPickerAnimation)animationForZoomOutFromProvider:(id<ABCalendarPickerDateProviderProtocol>)provider;
 @optional
 - (ABCalendarPickerAnimation)animationForLongPrev;
+
 - (ABCalendarPickerAnimation)animationForLongNext;
+
 @required
 
-- (NSDate*)dateForPrevAnimation;
-- (NSDate*)dateForNextAnimation;
+- (NSDate *)dateForPrevAnimation;
+
+- (NSDate *)dateForNextAnimation;
 
 @optional
-- (NSDate*)dateForLongPrevAnimation;
-- (NSDate*)dateForLongNextAnimation;
+- (NSDate *)dateForLongPrevAnimation;
+
+- (NSDate *)dateForLongNextAnimation;
+
 @required
 
 - (NSInteger)rowsCount;
+
 - (NSInteger)columnsCount;
-- (NSString*)columnName:(NSInteger)column;
-- (NSString*)titleText;
+
+- (NSString *)columnName:(NSInteger)column;
+
+- (NSString *)titleText;
 
 @optional
 - (NSDate *)mainDateBegin;
+
 - (NSDate *)mainDateEnd;
+
 @required
 
-- (NSDate*)dateForRow:(NSInteger)row andColumn:(NSInteger)column;
-- (NSString*)labelForDate:(NSDate*)date;
-- (UIControlState)controlStateForDate:(NSDate*)date;
-- (NSString*)labelForRow:(NSInteger)row andColumn:(NSInteger)column;
+- (NSDate *)dateForRow:(NSInteger)row andColumn:(NSInteger)column;
+
+- (NSString *)labelForDate:(NSDate *)date;
+
+- (UIControlState)controlStateForDate:(NSDate *)date;
+
+- (NSString *)labelForRow:(NSInteger)row andColumn:(NSInteger)column;
+
 - (UIControlState)controlStateForRow:(NSInteger)row andColumn:(NSInteger)column;
 
-@property (strong,nonatomic) NSCalendar * calendar;
+@property(strong, nonatomic) NSCalendar *calendar;
 
 @end

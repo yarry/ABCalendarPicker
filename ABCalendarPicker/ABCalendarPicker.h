@@ -35,38 +35,38 @@
  
  */
 
-@interface ABCalendarPicker : UIView<ABCalendarPickerDateOwner>
+@interface ABCalendarPicker : UIView <ABCalendarPickerDateOwner>
 
 /// ----------------------------------------------------------------
 /// @name Configuring behavior and displaying user data
 /// ----------------------------------------------------------------
 
 /** Delegate is needed for configuring and noticing calendars behavior. */
-@property (strong,nonatomic) id<ABCalendarPickerDelegateProtocol> delegate;
+@property(strong, nonatomic) id <ABCalendarPickerDelegateProtocol> delegate;
 /** Delegate is needed for displaying user information on calendar. */
-@property (strong,nonatomic) id<ABCalendarPickerDataSourceProtocol> dataSource;
+@property(strong, nonatomic) id <ABCalendarPickerDataSourceProtocol> dataSource;
 /** Flag means wich side of the view should grow: bottom or top. */
-@property (nonatomic) BOOL bottomExpanding;
+@property(nonatomic) BOOL bottomExpanding;
 /** Flag means is swipe enabled for navigation. */
-@property (nonatomic) BOOL swipeNavigationEnabled;
+@property(nonatomic) BOOL swipeNavigationEnabled;
 
 /// ----------------------------------------------------------------
 /// @name Customization
 /// ----------------------------------------------------------------
 
 /** Provides styling, for subviews */
-@property (strong,nonatomic) id<ABCalendarPickerStyleProviderProtocol> styleProvider;
+@property(strong, nonatomic) id <ABCalendarPickerStyleProviderProtocol> styleProvider;
 
 /** Provides button layout, animations and other options for days in week view */
-@property (strong,nonatomic) id<ABCalendarPickerDateProviderProtocol> weekdaysProvider;
+@property(strong, nonatomic) id <ABCalendarPickerDateProviderProtocol> weekdaysProvider;
 /** Provides button layout, animations and other options for days in month view */
-@property (strong,nonatomic) id<ABCalendarPickerDateProviderProtocol> daysProvider;
+@property(strong, nonatomic) id <ABCalendarPickerDateProviderProtocol> daysProvider;
 /** Provides button layout, animations and other options for months in year view */
-@property (strong,nonatomic) id<ABCalendarPickerDateProviderProtocol> monthsProvider;
+@property(strong, nonatomic) id <ABCalendarPickerDateProviderProtocol> monthsProvider;
 /** Provides button layout, animations and other options for years in eras view */
-@property (strong,nonatomic) id<ABCalendarPickerDateProviderProtocol> yearsProvider;
+@property(strong, nonatomic) id <ABCalendarPickerDateProviderProtocol> yearsProvider;
 /** Provides button layout, animations and other options for eras in xxx view */
-@property (strong,nonatomic) id<ABCalendarPickerDateProviderProtocol> erasProvider;
+@property(strong, nonatomic) id <ABCalendarPickerDateProviderProtocol> erasProvider;
 
 /** Is used for all dates calculations during calendar navigation. Default value for
  calendar is `[NSCalendar currentCalendar]`, but you can assign any.
@@ -77,24 +77,24 @@
     [calendar setFirstWeekday:2];
     calendarPicker.calendar = calendar;
  */
-@property (strong,nonatomic) NSCalendar * calendar;
+@property(strong, nonatomic) NSCalendar *calendar;
 
 /// ----------------------------------------------------------------
 /// @name Accessing current state
 /// ----------------------------------------------------------------
 
 /** Retrieving current calendar state */
-@property (readonly,nonatomic) ABCalendarPickerState currentState;
+@property(readonly, nonatomic) ABCalendarPickerState currentState;
 /** Retrieving and setting selected date, looks like today date. */
-@property (readonly,strong,nonatomic) NSDate * selectedDate;
+@property(readonly, strong, nonatomic) NSDate *selectedDate;
 /** Retrieving and setting highlighted date, looks like user-tapped date. */
-@property (readonly,strong,nonatomic) NSDate * highlightedDate;
+@property(readonly, strong, nonatomic) NSDate *highlightedDate;
 
 @property(nonatomic) BOOL multiselect;
 
 - (void)updateStateAnimated:(BOOL)animated;
 
-- (void)setDate:(NSDate*)date andState:(ABCalendarPickerState)state animated:(BOOL)animated;
+- (void)setDate:(NSDate *)date andState:(ABCalendarPickerState)state animated:(BOOL)animated;
 
 - (void)setState:(ABCalendarPickerState)state animated:(BOOL)animated;
 
@@ -107,4 +107,6 @@
 - (NSDate *)startDate;
 
 - (NSDate *)endDate;
+
+- (id)dequeueReusableViewWithIdentifier:(NSString *)identifier creationBlock:(id (^)())block;
 @end

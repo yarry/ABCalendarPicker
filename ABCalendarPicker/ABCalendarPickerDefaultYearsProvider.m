@@ -8,7 +8,7 @@
 
 #import "ABCalendarPickerDefaultYearsProvider.h"
 
-@interface ABCalendarPickerDefaultYearsProvider()
+@interface ABCalendarPickerDefaultYearsProvider ()
 @end
 
 @implementation ABCalendarPickerDefaultYearsProvider
@@ -28,31 +28,38 @@
     return NO;
 }
 
-- (ABCalendarPickerAnimation)animationForPrev {
+- (ABCalendarPickerAnimation)animationForPrev
+{
     return ABCalendarPickerAnimationScrollLeft;
 }
-- (ABCalendarPickerAnimation)animationForNext {
+
+- (ABCalendarPickerAnimation)animationForNext
+{
     return ABCalendarPickerAnimationScrollRight;
 }
-- (ABCalendarPickerAnimation)animationForZoomInToProvider:(id<ABCalendarPickerDateProviderProtocol>)provider {
+
+- (ABCalendarPickerAnimation)animationForZoomInToProvider:(id <ABCalendarPickerDateProviderProtocol>)provider
+{
     return ABCalendarPickerAnimationZoomIn;
 }
-- (ABCalendarPickerAnimation)animationForZoomOutToProvider:(id<ABCalendarPickerDateProviderProtocol>)provider {
+
+- (ABCalendarPickerAnimation)animationForZoomOutToProvider:(id <ABCalendarPickerDateProviderProtocol>)provider
+{
     return ABCalendarPickerAnimationZoomOut;
 }
 
-- (NSDate*)dateForPrevAnimation
+- (NSDate *)dateForPrevAnimation
 {
-    NSDateComponents * components = [[NSDateComponents alloc] init];
-    components.year = -[self rowsCount]*[self columnsCount];
-    return [self.calendar dateByAddingComponents:components toDate:[self.dateOwner highlightedDate] options:0];   
+    NSDateComponents *components = [[NSDateComponents alloc] init];
+    components.year = -[self rowsCount] * [self columnsCount];
+    return [self.calendar dateByAddingComponents:components toDate:[self.dateOwner highlightedDate] options:0];
 }
 
-- (NSDate*)dateForNextAnimation
+- (NSDate *)dateForNextAnimation
 {
-    NSDateComponents * components = [[NSDateComponents alloc] init];
-    components.year = [self rowsCount]*[self columnsCount];
-    return [self.calendar dateByAddingComponents:components toDate:[self.dateOwner highlightedDate] options:0]; 
+    NSDateComponents *components = [[NSDateComponents alloc] init];
+    components.year = [self rowsCount] * [self columnsCount];
+    return [self.calendar dateByAddingComponents:components toDate:[self.dateOwner highlightedDate] options:0];
 }
 
 - (NSInteger)rowsCount
@@ -65,62 +72,65 @@
     return 5;
 }
 
-- (NSString*)columnName:(NSInteger)column
+- (NSString *)columnName:(NSInteger)column
 {
     return nil;
 }
 
-- (NSString*)titleText
+- (NSString *)titleText
 {
-    NSDate * firstDate = [self dateForRow:0 andColumn:0];
-    NSInteger firstYear = [self.calendar ordinalityOfUnit:NSYearCalendarUnit inUnit:NSEraCalendarUnit forDate:firstDate];
-    NSInteger lastYear = firstYear + [self rowsCount]*[self columnsCount] - 1;
+    NSDate *firstDate = [self dateForRow:0 andColumn:0];
+    NSInteger
+            firstYear = [self.calendar ordinalityOfUnit:NSYearCalendarUnit inUnit:NSEraCalendarUnit forDate:firstDate];
+    NSInteger lastYear = firstYear + [self rowsCount] * [self columnsCount] - 1;
     return [NSString stringWithFormat:@"%d - %d", firstYear, lastYear, nil];
 }
 
-- (NSDate*)dateForRow:(NSInteger)row
-            andColumn:(NSInteger)column 
+- (NSDate *)dateForRow:(NSInteger)row
+             andColumn:(NSInteger)column
 {
     NSInteger components = (NSEraCalendarUnit
-                            | NSYearCalendarUnit 
-                            | NSMonthCalendarUnit 
-                            | NSDayCalendarUnit);
-    
-    NSDateComponents * dateComponents = [self.calendar components:components fromDate:[self.dateOwner highlightedDate]];
-    NSInteger yearOffset = (dateComponents.year - 1) / ([self rowsCount]*[self columnsCount])
-                                                     * ([self rowsCount]*[self columnsCount]);
-    dateComponents.year = yearOffset + row*[self columnsCount]+column + 1;
+            | NSYearCalendarUnit
+            | NSMonthCalendarUnit
+            | NSDayCalendarUnit);
+
+    NSDateComponents *dateComponents = [self.calendar components:components fromDate:[self.dateOwner highlightedDate]];
+    NSInteger yearOffset = (dateComponents.year - 1) / ([self rowsCount] * [self columnsCount])
+            * ([self rowsCount] * [self columnsCount]);
+    dateComponents.year = yearOffset + row * [self columnsCount] + column + 1;
     return [self.calendar dateFromComponents:dateComponents];
 }
 
-- (NSString*)labelForDate:(NSDate*)date
+- (NSString *)labelForDate:(NSDate *)date
 {
     NSInteger year = [self.calendar ordinalityOfUnit:NSYearCalendarUnit inUnit:NSEraCalendarUnit forDate:date];
-    return [NSString stringWithFormat:@"%d",year,nil];
+    return [NSString stringWithFormat:@"%d", year, nil];
 }
 
-- (UIControlState)controlStateForDate:(NSDate*)date
+- (UIControlState)controlStateForDate:(NSDate *)date
 {
     NSUInteger currentYear = [self.calendar ordinalityOfUnit:NSYearCalendarUnit inUnit:NSEraCalendarUnit forDate:date];
-    NSUInteger selectedYear = [self.calendar ordinalityOfUnit:NSYearCalendarUnit inUnit:NSEraCalendarUnit forDate:[self.dateOwner selectedDate]];
-    NSUInteger highlightedYear = [self.calendar ordinalityOfUnit:NSYearCalendarUnit inUnit:NSEraCalendarUnit forDate:[self.dateOwner highlightedDate]];
-    
+    NSUInteger selectedYear =
+            [self.calendar ordinalityOfUnit:NSYearCalendarUnit inUnit:NSEraCalendarUnit forDate:[self.dateOwner selectedDate]];
+    NSUInteger highlightedYear =
+            [self.calendar ordinalityOfUnit:NSYearCalendarUnit inUnit:NSEraCalendarUnit forDate:[self.dateOwner highlightedDate]];
+
     BOOL isSelected = (currentYear == selectedYear);
-    BOOL isHilighted = (currentYear == highlightedYear); 
+    BOOL isHilighted = (currentYear == highlightedYear);
     if (isSelected || isHilighted)
         return (isSelected ? UIControlStateSelected : 0) | (isHilighted ? UIControlStateHighlighted : 0);
-    
+
     return UIControlStateNormal;
 }
 
-- (NSString*)labelForRow:(NSInteger)row 
-               andColumn:(NSInteger)column                  
+- (NSString *)labelForRow:(NSInteger)row
+                andColumn:(NSInteger)column
 {
     return [self labelForDate:[self dateForRow:row andColumn:column]];
 }
 
-- (UIControlState)controlStateForRow:(NSInteger)row 
-                           andColumn:(NSInteger)column 
+- (UIControlState)controlStateForRow:(NSInteger)row
+                           andColumn:(NSInteger)column
 {
     return [self controlStateForDate:[self dateForRow:row andColumn:column]];
 }

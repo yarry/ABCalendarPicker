@@ -11,8 +11,8 @@
 #import "ABCalendarPickerDefaultStyleProvider.h"
 #import "UIMyButton.h"
 
-@interface ABCalendarPickerDefaultStyleProvider()
-@property (strong,nonatomic) ABViewPool * controlsPool;
+@interface ABCalendarPickerDefaultStyleProvider ()
+@property(strong, nonatomic) ABViewPool *controlsPool;
 @end
 
 @implementation ABCalendarPickerDefaultStyleProvider
@@ -47,17 +47,17 @@
 
 - (NSBundle *)frameworkBundle
 {
-    static NSBundle* frameworkBundle = nil;
+    static NSBundle *frameworkBundle = nil;
     static dispatch_once_t predicate;
     dispatch_once(&predicate, ^{
-        NSString* mainBundlePath = [[NSBundle mainBundle] resourcePath];
-        NSString* frameworkBundlePath = [mainBundlePath stringByAppendingPathComponent:@"ABCalendarPicker.bundle"];
+        NSString *mainBundlePath = [[NSBundle mainBundle] resourcePath];
+        NSString *frameworkBundlePath = [mainBundlePath stringByAppendingPathComponent:@"ABCalendarPicker.bundle"];
         frameworkBundle = [NSBundle bundleWithPath:frameworkBundlePath];
     });
     return frameworkBundle;
 }
 
-- (UIImage *)imageNamed:(NSString*)name
+- (UIImage *)imageNamed:(NSString *)name
 {
     if ([self frameworkBundle])
         return [UIImage imageWithContentsOfFile:[[self frameworkBundle] pathForResource:name ofType:@"png"]];
@@ -127,7 +127,7 @@
 - (UIImage *)normalImage
 {
     if (_normalImage == nil)
-        _normalImage = [[self imageNamed:@"TileNormal"] resizableImageWithCapInsets:UIEdgeInsetsMake(2,2,2,2)];
+        _normalImage = [[self imageNamed:@"TileNormal"] resizableImageWithCapInsets:UIEdgeInsetsMake(2, 2, 2, 2)];
     return _normalImage;
 }
 
@@ -141,7 +141,7 @@
 - (UIImage *)selectedImage
 {
     if (_selectedImage == nil)
-        _selectedImage = [[self imageNamed:@"TileToday"] resizableImageWithCapInsets:UIEdgeInsetsMake(13,10,13,10)];
+        _selectedImage = [[self imageNamed:@"TileToday"] resizableImageWithCapInsets:UIEdgeInsetsMake(13, 10, 13, 10)];
     return _selectedImage;
 }
 
@@ -152,10 +152,11 @@
     [[UIMyButton stateSizeImageDict] removeAllObjects];
 }
 
-- (UIImage*)highlightedImage
+- (UIImage *)highlightedImage
 {
     if (_highlightedImage == nil)
-        _highlightedImage = [[self imageNamed:@"TileSelected"] resizableImageWithCapInsets:UIEdgeInsetsMake(2,1,2,1)];
+        _highlightedImage =
+                [[self imageNamed:@"TileSelected"] resizableImageWithCapInsets:UIEdgeInsetsMake(2, 1, 2, 1)];
     return _highlightedImage;
 }
 
@@ -166,10 +167,11 @@
     [[UIMyButton stateSizeImageDict] removeAllObjects];
 }
 
-- (UIImage*)selectedHighlightedImage
+- (UIImage *)selectedHighlightedImage
 {
     if (_selectedHighlightedImage == nil)
-        _selectedHighlightedImage = [[self imageNamed:@"TileTodaySelected"] resizableImageWithCapInsets:UIEdgeInsetsMake(11,9,11,9)];
+        _selectedHighlightedImage =
+                [[self imageNamed:@"TileTodaySelected"] resizableImageWithCapInsets:UIEdgeInsetsMake(11, 9, 11, 9)];
     return _selectedHighlightedImage;
 }
 
@@ -267,7 +269,7 @@
 - (CGSize)normalTextShadowPosition
 {
     if (CGSizeEqualToSize(_normalTextShadowPosition, CGSizeZero))
-        _normalTextShadowPosition = CGSizeMake(0,1);
+        _normalTextShadowPosition = CGSizeMake(0, 1);
     return _normalTextShadowPosition;
 }
 
@@ -281,7 +283,7 @@
 - (CGSize)disabledTextShadowPosition
 {
     if (CGSizeEqualToSize(_disabledTextShadowPosition, CGSizeZero))
-        _disabledTextShadowPosition = CGSizeMake(0,1);
+        _disabledTextShadowPosition = CGSizeMake(0, 1);
     return _disabledTextShadowPosition;
 }
 
@@ -295,7 +297,7 @@
 - (CGSize)selectedTextShadowPosition
 {
     if (CGSizeEqualToSize(_selectedTextShadowPosition, CGSizeZero))
-        _selectedTextShadowPosition = CGSizeMake(0,-1);
+        _selectedTextShadowPosition = CGSizeMake(0, -1);
     return _selectedTextShadowPosition;
 }
 
@@ -306,51 +308,55 @@
     [[UIMyButton stateSizeImageDict] removeAllObjects];
 }
 
-- (UIControl*)calendarPicker:(ABCalendarPicker*)calendarPicker
-            cellViewForTitle:(NSString*)cellTitle
-                    andState:(ABCalendarPickerState)state
+- (UIControl *)calendarPicker:(ABCalendarPicker *)calendarPicker
+             cellViewForTitle:(NSString *)cellTitle
+                     andState:(ABCalendarPickerState)state
 {
-    UIMyButton * button = (UIMyButton *)[self.controlsPool giveExistingOrCreateNewWith:^
-    {
-        UIMyButton * button = [[UIMyButton alloc] init];
+    UIMyButton *button = (UIMyButton *) [self.controlsPool giveExistingOrCreateNewWith:^{
+        UIMyButton *button = [[UIMyButton alloc] init];
         button.tileTitleFont = self.tileTitleFont;
         button.tileDotFont = self.tileDotFont;
         button.opaque = YES;
         button.userInteractionEnabled = NO;
         button.clipsToBounds = YES;
-        
+
         [button setTitleColor:self.normalTextColor forState:UIControlStateNormal];
         [button setTitleColor:self.disabledTextColor forState:UIControlStateDisabled];
         [button setTitleColor:self.selectedTextColor forState:UIControlStateDisabled | UIControlStateSelected];
         [button setTitleColor:self.selectedTextColor forState:UIControlStateHighlighted];
         [button setTitleColor:self.selectedTextColor forState:UIControlStateSelected];
         [button setTitleColor:self.selectedTextColor forState:UIControlStateSelected | UIControlStateHighlighted];
-        
+
         [button setTitleShadowColor:self.normalTextShadowColor forState:UIControlStateNormal];
         [button setTitleShadowColor:self.disabledTextShadowColor forState:UIControlStateDisabled];
-        [button setTitleShadowColor:self.selectedTextShadowColor forState:UIControlStateDisabled | UIControlStateSelected];
+        [button setTitleShadowColor:self.selectedTextShadowColor forState:UIControlStateDisabled |
+                UIControlStateSelected];
         [button setTitleShadowColor:self.selectedTextShadowColor forState:UIControlStateHighlighted];
         [button setTitleShadowColor:self.selectedTextShadowColor forState:UIControlStateSelected];
-        [button setTitleShadowColor:self.selectedTextShadowColor forState:UIControlStateSelected | UIControlStateHighlighted];
-        
+        [button setTitleShadowColor:self.selectedTextShadowColor forState:UIControlStateSelected |
+                UIControlStateHighlighted];
+
         [button setTitleShadowOffset:self.normalTextShadowPosition forState:UIControlStateNormal];
         [button setTitleShadowOffset:self.disabledTextShadowPosition forState:UIControlStateDisabled];
-        [button setTitleShadowOffset:self.selectedTextShadowPosition forState:UIControlStateDisabled | UIControlStateSelected];
+        [button setTitleShadowOffset:self.selectedTextShadowPosition forState:UIControlStateDisabled |
+                UIControlStateSelected];
         [button setTitleShadowOffset:self.selectedTextShadowPosition forState:UIControlStateHighlighted];
         [button setTitleShadowOffset:self.selectedTextShadowPosition forState:UIControlStateSelected];
-        [button setTitleShadowOffset:self.selectedTextShadowPosition forState:UIControlStateSelected | UIControlStateHighlighted];
-        
+        [button setTitleShadowOffset:self.selectedTextShadowPosition forState:UIControlStateSelected |
+                UIControlStateHighlighted];
+
         [button setBackgroundImage:self.normalImage forState:UIControlStateNormal];
         [button setBackgroundImage:self.normalImage forState:UIControlStateDisabled];
         [button setBackgroundImage:self.selectedImage forState:UIControlStateDisabled | UIControlStateSelected];
         [button setBackgroundImage:self.highlightedImage forState:UIControlStateHighlighted];
         [button setBackgroundImage:self.highlightedImage forState:UIControlStateDisabled | UIControlStateHighlighted];
         [button setBackgroundImage:self.selectedImage forState:UIControlStateSelected];
-        [button setBackgroundImage:self.selectedHighlightedImage forState:UIControlStateSelected | UIControlStateHighlighted];
-        
+        [button setBackgroundImage:self.selectedHighlightedImage forState:UIControlStateSelected |
+                UIControlStateHighlighted];
+
         return button;
     }];
-    
+
     //button.layer.shouldRasterize = YES;
     //button.layer.rasterizationScale = [[UIScreen mainScreen] scale];
     button.numberOfDots = 0;
@@ -358,30 +364,34 @@
     return button;
 }
 
-- (void)calendarPicker:(ABCalendarPicker*)calendarPicker
- postUpdateForCellView:(UIControl*)control
+- (void)calendarPicker:(ABCalendarPicker *)calendarPicker
+ postUpdateForCellView:(UIControl *)control
         onControlState:(UIControlState)controlState
             withEvents:(NSInteger)eventsCount
               andState:(ABCalendarPickerState)state
 {
     if (state != ABCalendarPickerStateDays
-        && state != ABCalendarPickerStateWeekdays)
+            && state != ABCalendarPickerStateWeekdays)
         return;
-    
-    UIMyButton * button = (UIMyButton *)control;
-    button.numberOfDots = MIN(self.maxNumberOfDots,eventsCount);
+
+    UIMyButton *button = (UIMyButton *) control;
+    button.numberOfDots = MIN(self.maxNumberOfDots, eventsCount);
 }
 
-- (CGFloat)buttonAspect
+- (CGFloat)buttonAspectRatio
 {
-    return 0.9;
+    return 1.0f;
+}
+
+- (CGFloat)buttonAspectRatioForState:(ABCalendarPickerState)state
+{
+    return [self buttonAspectRatio];
 }
 
 
 - (id)init
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         self.maxNumberOfDots = 6;
     }
     return self;

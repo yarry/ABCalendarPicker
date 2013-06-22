@@ -2,10 +2,10 @@
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1072</int>
-		<string key="IBDocument.SystemVersion">12C60</string>
+		<string key="IBDocument.SystemVersion">12E55</string>
 		<string key="IBDocument.InterfaceBuilderVersion">3084</string>
-		<string key="IBDocument.AppKitVersion">1187.34</string>
-		<string key="IBDocument.HIToolboxVersion">625.00</string>
+		<string key="IBDocument.AppKitVersion">1187.39</string>
+		<string key="IBDocument.HIToolboxVersion">626.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 			<string key="NS.object.0">2083</string>
@@ -115,7 +115,7 @@
 							<object class="IBUISegmentedControl" id="421400107">
 								<reference key="NSNextResponder" ref="508822661"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{20, 20}, {280, 30}}</string>
+								<string key="NSFrame">{{20, 47}, {280, 30}}</string>
 								<reference key="NSSuperview" ref="508822661"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="743176138"/>
@@ -174,10 +174,9 @@
 							<object class="IBUISegmentedControl" id="694672935">
 								<reference key="NSNextResponder" ref="508822661"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{164, 57}, {136, 30}}</string>
+								<string key="NSFrame">{{164, 84}, {136, 30}}</string>
 								<reference key="NSSuperview" ref="508822661"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -208,7 +207,7 @@
 							<object class="IBUISegmentedControl" id="743176138">
 								<reference key="NSNextResponder" ref="508822661"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{20, 57}, {136, 30}}</string>
+								<string key="NSFrame">{{20, 84}, {136, 30}}</string>
 								<reference key="NSSuperview" ref="508822661"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="694672935"/>
@@ -239,11 +238,45 @@
 									<reference ref="4"/>
 								</array>
 							</object>
+							<object class="IBUISegmentedControl" id="392892961">
+								<reference key="NSNextResponder" ref="508822661"/>
+								<int key="NSvFlags">292</int>
+								<string key="NSFrame">{{18, 10}, {179, 30}}</string>
+								<reference key="NSSuperview" ref="508822661"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="421400107"/>
+								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<bool key="IBUIOpaque">NO</bool>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<int key="IBSegmentControlStyle">2</int>
+								<int key="IBNumberOfSegments">2</int>
+								<int key="IBSelectedSegmentIndex">0</int>
+								<array key="IBSegmentTitles">
+									<string>Single select</string>
+									<string>Range select</string>
+								</array>
+								<array class="NSMutableArray" key="IBSegmentWidths">
+									<real value="0.0"/>
+									<real value="0.0"/>
+								</array>
+								<array class="NSMutableArray" key="IBSegmentEnabledStates">
+									<boolean value="YES"/>
+									<boolean value="YES"/>
+								</array>
+								<array class="NSMutableArray" key="IBSegmentContentOffsets">
+									<string>{0, 0}</string>
+									<string>{0, 0}</string>
+								</array>
+								<array class="NSMutableArray" key="IBSegmentImages">
+									<reference ref="4"/>
+									<reference ref="4"/>
+								</array>
+							</object>
 						</array>
-						<string key="NSFrame">{{0, 354}, {320, 106}}</string>
+						<string key="NSFrame">{{0, 327}, {320, 133}}</string>
 						<reference key="NSSuperview" ref="774585933"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="421400107"/>
+						<reference key="NSNextKeyView" ref="392892961"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">3</int>
@@ -360,6 +393,24 @@
 					</object>
 					<int key="connectionID">86</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">monthGridChange:</string>
+						<reference key="source" ref="392892961"/>
+						<reference key="destination" ref="372490531"/>
+						<int key="IBEventType">13</int>
+					</object>
+					<int key="connectionID">88</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">selectionStyleChange:</string>
+						<reference key="source" ref="392892961"/>
+						<reference key="destination" ref="372490531"/>
+						<int key="IBEventType">13</int>
+					</object>
+					<int key="connectionID">89</int>
+				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<array key="orderedObjects">
@@ -431,6 +482,7 @@
 							<reference ref="743176138"/>
 							<reference ref="694672935"/>
 							<reference ref="421400107"/>
+							<reference ref="392892961"/>
 						</array>
 						<reference key="parent" ref="774585933"/>
 					</object>
@@ -454,6 +506,11 @@
 						<reference key="object" ref="86399144"/>
 						<reference key="parent" ref="774585933"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">87</int>
+						<reference key="object" ref="392892961"/>
+						<reference key="parent" ref="508822661"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -476,12 +533,14 @@
 				<string key="81.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="82.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="83.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="87.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<integer value="0" key="87.IUISegmentedControlInspectorSelectedSegmentMetadataKey"/>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">86</int>
+			<int key="maxID">89</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -500,6 +559,7 @@
 						<string key="configTapped:">id</string>
 						<string key="firstWeekdayChange:">UISegmentedControl</string>
 						<string key="monthGridChange:">UISegmentedControl</string>
+						<string key="selectionStyleChange:">UISegmentedControl</string>
 						<string key="threeWeekChanged:">UISegmentedControl</string>
 						<string key="todayTapped:">id</string>
 					</dictionary>
@@ -514,6 +574,10 @@
 						</object>
 						<object class="IBActionInfo" key="monthGridChange:">
 							<string key="name">monthGridChange:</string>
+							<string key="candidateClassName">UISegmentedControl</string>
+						</object>
+						<object class="IBActionInfo" key="selectionStyleChange:">
+							<string key="name">selectionStyleChange:</string>
 							<string key="candidateClassName">UISegmentedControl</string>
 						</object>
 						<object class="IBActionInfo" key="threeWeekChanged:">

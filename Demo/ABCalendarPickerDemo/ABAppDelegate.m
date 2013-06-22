@@ -6,9 +6,8 @@
 //  Copyright (c) 2013 Anton Bukov. All rights reserved.
 //
 
-#import "ABAppDelegate.h"
-
-#import "ABViewController.h"
+#include "ABAppDelegate.h"
+#include "ABViewController.h"
 
 @implementation ABAppDelegate
 

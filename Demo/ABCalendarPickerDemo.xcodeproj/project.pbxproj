@@ -46,6 +46,13 @@
 			remoteGlobalIDString = 25DDA8DB15AA2A380049B532;
 			remoteInfo = ABCalendarPickerBundle;
 		};
+		5C987EDA1775F74100C7D6D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 258FAC9B16D9D3AD007EE6C6 /* ABCalendarPicker.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 25DDA8D015AA29D40049B532;
+			remoteInfo = ABCalendarPickerAll;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -175,6 +182,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				5C987EDB1775F74100C7D6D1 /* PBXTargetDependency */,
 			);
 			name = ABCalendarPickerDemo;
 			productName = ABCalendarPickerDemo;
@@ -267,6 +275,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		5C987EDB1775F74100C7D6D1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ABCalendarPickerAll;
+			targetProxy = 5C987EDA1775F74100C7D6D1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		254756E116D33DE600CDD004 /* InfoPlist.strings */ = {

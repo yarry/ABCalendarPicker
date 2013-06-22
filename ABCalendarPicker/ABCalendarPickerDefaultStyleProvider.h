@@ -10,47 +10,49 @@
 #import "ABCalendarPickerStyleProviderProtocol.h"
 #import <Foundation/Foundation.h>
 
-@interface ABCalendarPickerDefaultStyleProvider : NSObject<ABCalendarPickerStyleProviderProtocol>
+@interface ABCalendarPickerDefaultStyleProvider : NSObject <ABCalendarPickerStyleProviderProtocol>
 
-@property (nonatomic) UIColor * textColor;
-@property (nonatomic) UIColor * textShadowColor;
-@property (nonatomic) UIImage * patternImageForGradientBar;
+@property(nonatomic) UIColor *textColor;
+@property(nonatomic) UIColor *textShadowColor;
+@property(nonatomic) UIImage *patternImageForGradientBar;
 
-@property (nonatomic) UIFont * titleFontForColumnTitlesVisible;
-@property (nonatomic) UIFont * titleFontForColumnTitlesInvisible;
-@property (nonatomic) UIFont * columnFont;
-@property (nonatomic) UIFont * tileTitleFont;
-@property (nonatomic) UIFont * tileDotFont;
+@property(nonatomic) UIFont *titleFontForColumnTitlesVisible;
+@property(nonatomic) UIFont *titleFontForColumnTitlesInvisible;
+@property(nonatomic) UIFont *columnFont;
+@property(nonatomic) UIFont *tileTitleFont;
+@property(nonatomic) UIFont *tileDotFont;
 
-- (UIControl*)calendarPicker:(ABCalendarPicker*)calendarPicker
-            cellViewForTitle:(NSString*)cellTitle
-                    andState:(ABCalendarPickerState)state;
+- (UIControl *)calendarPicker:(ABCalendarPicker *)calendarPicker
+             cellViewForTitle:(NSString *)cellTitle
+                     andState:(ABCalendarPickerState)state;
 
-- (void)calendarPicker:(ABCalendarPicker*)calendarPicker
- postUpdateForCellView:(UIControl*)control
+- (void)calendarPicker:(ABCalendarPicker *)calendarPicker
+ postUpdateForCellView:(UIControl *)control
         onControlState:(UIControlState)controlState
             withEvents:(NSInteger)eventsCount
               andState:(ABCalendarPickerState)state;
 
-- (CGFloat)buttonAspect;
+- (CGFloat)buttonAspectRatio;
 
-@property (nonatomic) UIImage * normalImage;
-@property (nonatomic) UIImage * selectedImage;
-@property (nonatomic) UIImage * highlightedImage;
-@property (nonatomic) UIImage * selectedHighlightedImage;
+- (CGFloat)buttonAspectRatioForState:(ABCalendarPickerState)state;
 
-@property (nonatomic) UIColor * normalTextColor;
-@property (nonatomic) UIColor * disabledTextColor;
-@property (nonatomic) UIColor * selectedTextColor;
+@property(nonatomic) UIImage *normalImage;
+@property(nonatomic) UIImage *selectedImage;
+@property(nonatomic) UIImage *highlightedImage;
+@property(nonatomic) UIImage *selectedHighlightedImage;
 
-@property (nonatomic) UIColor * normalTextShadowColor;
-@property (nonatomic) UIColor * disabledTextShadowColor;
-@property (nonatomic) UIColor * selectedTextShadowColor;
+@property(nonatomic) UIColor *normalTextColor;
+@property(nonatomic) UIColor *disabledTextColor;
+@property(nonatomic) UIColor *selectedTextColor;
 
-@property (nonatomic) CGSize normalTextShadowPosition;
-@property (nonatomic) CGSize disabledTextShadowPosition;
-@property (nonatomic) CGSize selectedTextShadowPosition;
+@property(nonatomic) UIColor *normalTextShadowColor;
+@property(nonatomic) UIColor *disabledTextShadowColor;
+@property(nonatomic) UIColor *selectedTextShadowColor;
 
-@property (nonatomic) NSInteger maxNumberOfDots;
+@property(nonatomic) CGSize normalTextShadowPosition;
+@property(nonatomic) CGSize disabledTextShadowPosition;
+@property(nonatomic) CGSize selectedTextShadowPosition;
+
+@property(nonatomic) NSInteger maxNumberOfDots;
 
 @end

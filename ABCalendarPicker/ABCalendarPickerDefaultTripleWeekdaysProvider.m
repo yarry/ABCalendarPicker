@@ -38,18 +38,18 @@
 
 - (NSDate *)mainDateBegin
 {
-    return [self dateForRow:(self.rowsCount/2) andColumn:0];
+    return [self dateForRow:(self.rowsCount / 2) andColumn:0];
 }
 
 - (NSDate *)mainDateEnd
 {
-    return [self dateForRow:(self.rowsCount/2) andColumn:6];
+    return [self dateForRow:(self.rowsCount / 2) andColumn:6];
 }
 
-- (NSDate*)dateForRow:(NSInteger)row
-            andColumn:(NSInteger)column
+- (NSDate *)dateForRow:(NSInteger)row
+             andColumn:(NSInteger)column
 {
-    return [super dateForRow:row-1 andColumn:column];
+    return [super dateForRow:row - 1 andColumn:column];
 }
 
 @end

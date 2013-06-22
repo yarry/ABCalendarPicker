@@ -10,4 +10,6 @@
 
 @interface ABViewController : UIViewController
 
+- (IBAction)selectionStyleChange:(UISegmentedControl *)sender;
+
 @end

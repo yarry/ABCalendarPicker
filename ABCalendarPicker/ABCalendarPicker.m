@@ -44,10 +44,6 @@
 @property(strong, nonatomic) NSDate *highlightedDate;
 
 @property(strong, nonatomic) UIImage *patternImage;
-@property(strong, nonatomic) UIImage *normalImage;
-@property(strong, nonatomic) UIImage *highlightedImage;
-@property(strong, nonatomic) UIImage *selectedImage;
-@property(strong, nonatomic) UIImage *selectedHighlightedImage;
 @property(strong, nonatomic) UIImageView *gradientBar;
 
 
@@ -67,6 +63,7 @@
     NSIndexPath *_selectionEnd;
     BOOL _multiselectionStarted;
     NSMutableSet *_disabledControls;
+    NSMutableDictionary *_reusableViewPulls;
 }
 
 @synthesize delegate = _delegate;
@@ -108,10 +105,6 @@
 @synthesize deepPressingInProgress = _deepPressingInProgress;
 
 @synthesize patternImage = _patternImage;
-@synthesize normalImage = _normalImage;
-@synthesize highlightedImage = _highlightedImage;
-@synthesize selectedImage = _selectedImage;
-@synthesize selectedHighlightedImage = _selectedHighlightedImage;
 @synthesize gradientBar = _gradientBar;
 
 - (NSBundle *)frameworkBundle
@@ -181,13 +174,11 @@
 - (NSArray *)providers
 {
     id null = (id) [NSNull null];
-    return [NSArray arrayWithObjects:
-            (self.weekdaysProvider != nil) ? self.weekdaysProvider : null,
+    return @[(self.weekdaysProvider != nil) ? self.weekdaysProvider : null,
             (self.daysProvider != nil) ? self.daysProvider : null,
             (self.monthsProvider != nil) ? self.monthsProvider : null,
             (self.yearsProvider != nil) ? self.yearsProvider : null,
-            (self.erasProvider != nil) ? self.erasProvider : null,
-            nil];
+            (self.erasProvider != nil) ? self.erasProvider : null];
 }
 
 - (id <ABCalendarPickerDateProviderProtocol>)providerForState:(ABCalendarPickerState)state
@@ -359,7 +350,7 @@
 - (void)titleClicked:(id)sender
 {
     NSInteger index = [self.providers indexOfObject:self.currentProvider];
-    if (index < self.providers.count - 1 && [self.providers objectAtIndex:index + 1] != nil)
+    if (index < self.providers.count - 1 && (self.providers)[index + 1] != nil)
         [self setState:self.currentState + 1 animated:YES];
 }
 
@@ -373,7 +364,7 @@
 
     NSInteger canDiffuse = [self.currentProvider canDiffuse];
     UIControl *control = self.controls[0][0];
-    if(control.enabled) {
+    if (control.enabled) {
         canDiffuse = 0;
     }
 
@@ -392,8 +383,8 @@
 
     NSInteger canDiffuse = [self.currentProvider canDiffuse];
     UIControl *control = [[self.controls lastObject] lastObject];
-    if(control.enabled) {
-       canDiffuse = 0;
+    if (control.enabled) {
+        canDiffuse = 0;
     }
     ABCalendarPickerAnimation animation = [self.currentProvider animationForNext];
     self.highlightedDate = [self.currentProvider dateForNextAnimation];
@@ -482,7 +473,7 @@
 - (UIControl *)controlForRow:(NSUInteger)row column:(NSInteger)column
 {
     if (row < [self.controls count]) {
-        NSArray *arr = [self.controls objectAtIndex:row];
+        NSArray *arr = (self.controls)[row];
         if (column < [arr count]) {
             return arr[column];
         }
@@ -493,7 +484,7 @@
 - (UIControl *)controlForIndexPath:(NSIndexPath *)path
 {
     if (path.row < [self.controls count]) {
-        NSArray *arr = [self.controls objectAtIndex:path.row];
+        NSArray *arr = (self.controls)[path.row];
         if (path.section < [arr count]) {
             return arr[path.section];
         }
@@ -504,9 +495,9 @@
 - (UIControl *)controlForPoint:(CGPoint)point row:(NSInteger *)pRow column:(NSInteger *)pColumnt
 {
     for (int i = 0; i < [self.controls count]; i++) {
-        NSArray *arr = [self.controls objectAtIndex:i];
+        NSArray *arr = (self.controls)[i];
         for (int j = 0; j < arr.count; j++) {
-            UIControl *control = [arr objectAtIndex:j];
+            UIControl *control = arr[j];
             if (CGRectContainsPoint(control.frame, point)) {
                 *pRow = i;
                 *pColumnt = j;
@@ -556,7 +547,7 @@
             else {
                 // Lets segue in
                 NSInteger index = [self.providers indexOfObject:self.currentProvider];
-                if (index > 0 && [self.providers objectAtIndex:index - 1] != nil)
+                if (index > 0 && (self.providers)[index - 1] != nil)
                     [self setState:self.currentState - 1 animated:YES];
                 else if (self.currentState == ABCalendarPickerStateWeekdays)
                     [self setState:self.currentState + 1 animated:YES];
@@ -680,7 +671,7 @@
 
 - (void)hideMultiselection
 {
-    if(_startDate && _endDate) {
+    if (_startDate && _endDate) {
         [self endMultiselection];
         [self highlightRange];
     }
@@ -696,7 +687,7 @@
 
 - (void)highlightRange
 {
-   [self highlightRangeForProvider:self.currentProvider andState:self.currentState];
+    [self highlightRangeForProvider:self.currentProvider andState:self.currentState];
 }
 
 - (void)highlightRangeForProvider:(id <ABCalendarPickerDateProviderProtocol>)provider andState:(ABCalendarPickerState)state
@@ -731,9 +722,9 @@
     NSIndexPath *selectionEnd = nil;
 
     for (int i = 0; i < [self.controls count]; i++) {
-        NSArray *arr = [self.controls objectAtIndex:i];
+        NSArray *arr = (self.controls)[i];
         for (int j = 0; j < arr.count; j++) {
-            UIControl *control = [arr objectAtIndex:j];
+            UIControl *control = arr[j];
             NSDate *date = [provider dateForRow:i andColumn:j];
 
             if ([date timeIntervalSinceDate:startDate] >= 0 && [date timeIntervalSinceDate:endDate] <= 0) {
@@ -785,93 +776,6 @@
         //[_highlightedControls addObject:control];
     }
 }
-
-/*
-- (void)tilesTouchedAt:(CGPoint)point moved:(BOOL)moved
-{
-    for (int i = 0 ; i < [self.controls count]; i++)
-    {
-        NSArray * arr = [self.controls objectAtIndex:i];
-        for (int j = 0; j < arr.count; j++) 
-        {
-            UIControl * control = [arr objectAtIndex:j];
-            
-            if (CGRectContainsPoint(control.frame, point))
-            {
-                NSDate * date = [self.currentProvider dateForRow:i andColumn:j];
-                
-                if (control.enabled)
-                {
-                    if (control.highlighted)
-                    {
-                        if (!moved)
-                            self.controlTouchBegin = control;
-                    }
-                    else 
-                    {
-                        // Lets highlight
-                        self.highlightedDate = date;
-                        self.highlightedControl.highlighted = NO;
-                        self.highlightedControl = control;
-                        self.highlightedControl.highlighted = YES;
-                        
-                        [self.oldTileView bringSubviewToFront:self.selectedControl];
-                        [self.oldTileView bringSubviewToFront:control];
-                    }
-                }
-                else
-                {
-                    // Lets segue prev or next
-                    ABCalendarPickerAnimation animation = (i == 0) ? [self.currentProvider animationForPrev] : [self.currentProvider animationForNext];
-
-                    self.highlightedDate = date;
-                    if ([self.currentProvider rowsCount] == 1)
-                        [self changeStateTo:self.currentState fromState:self.currentState animation:ABCalendarPickerAnimationTransition canDiffuse:1];
-                    else
-                        [self changeStateTo:self.currentState fromState:self.currentState animation:animation canDiffuse:[self.currentProvider canDiffuse]];
-                    return;
-                }
-            }
-        }
-    }
-}
-
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    CGPoint point = [[touches anyObject] locationInView:self.oldTileView];
-    [self tilesTouchedAt:point moved:NO];
-}
-
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    CGPoint point = [[touches anyObject] locationInView:self.oldTileView];
-    [self tilesTouchedAt:point moved:YES];    
-}
-
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    CGPoint point = [[touches anyObject] locationInView:self.oldTileView];
-    
-    for (NSArray * arr in self.controls)
-    for (UIControl * control in arr)
-        if (CGRectContainsPoint(control.frame, point))
-        {
-            if (control == self.controlTouchBegin)
-            {
-                // Lets segue in
-                NSInteger index = [self.providers indexOfObject:self.currentProvider];
-                if (index > 0 && [self.providers objectAtIndex:index-1] != nil)
-                    [self setState:self.currentState-1 animated:YES];
-                else if (self.currentState == ABCalendarPickerStateWeekdays)
-                    [self setState:self.currentState+1 animated:YES];
-                self.controlTouchBegin = nil;
-            }
-            return;
-        }
-    
-    return;
-}
-*/
 
 #pragma mark -
 #pragma mark Animation Functions
@@ -1031,9 +935,9 @@
     }
 
     for (int i = 0; i < self.controls.count; i++) {
-        NSArray *arr = [self.controls objectAtIndex:i];
+        NSArray *arr = (self.controls)[i];
         for (int j = 0; j < arr.count; j++) {
-            UIControl *control = [arr objectAtIndex:j];
+            UIControl *control = arr[j];
 
             NSDate *buttonDate = [provider dateForRow:i andColumn:j];
             UIControlState controlState = [provider controlStateForDate:buttonDate];
@@ -1057,8 +961,8 @@
     // Performance optimization
     NSInteger rowsCount = [provider rowsCount];
     NSInteger columnsCount = [provider columnsCount];
-    CGFloat buttonWidth = floor((self.bounds.size.width + 2) / columnsCount);
-    CGFloat buttonHeight = floor(buttonWidth * [self.styleProvider buttonAspect]);
+    CGFloat buttonWidth = floorf((self.bounds.size.width + 2) / columnsCount);
+    CGFloat buttonHeight = floorf(buttonWidth / [self.styleProvider buttonAspectRatioForState:state]);
 
     self.selectedControl = nil;
     self.highlightedControl = nil;
@@ -1336,7 +1240,7 @@
 - (void)animationDidStop:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context
 {
     for (int i = 0; i < self.dotLabelsToRemove; i++) {
-        [[self.dotLabels objectAtIndex:0] removeFromSuperview];
+        [(self.dotLabels)[0] removeFromSuperview];
         [self.dotLabels removeObjectAtIndex:0];
     }
 
@@ -1386,7 +1290,7 @@
     NSInteger rowsCount = [provider rowsCount];
     NSInteger columnsCount = [provider columnsCount];
     CGFloat buttonWidth = floorf((self.bounds.size.width + 2) / columnsCount);
-    CGFloat buttonHeight = floorf(buttonWidth * self.styleProvider.buttonAspect);
+    CGFloat buttonHeight = floorf(buttonWidth / [self.styleProvider buttonAspectRatioForState:toState]);
 
     CGFloat oldFrameBottom = self.frame.origin.y + self.frame.size.height;
     CGFloat newFrameHeight = 50.0 + buttonHeight * rowsCount + 1;
@@ -1451,7 +1355,7 @@
 
     // Animation
 
-    UIButton *firstButton = [[self.controls objectAtIndex:0] objectAtIndex:0];
+    UIButton *firstButton = (self.controls)[0][0];
     UIButton *lastButton = [[self.controls lastObject] lastObject];
 
     UIView *fromView = self.oldTileView;
@@ -1857,14 +1761,12 @@
 {
     if (_multiselect != multiselect) {
 
-        if (_multiselect) {
+        _multiselect = multiselect;
 
-        }
-        else {
+        if (!_multiselect) {
             [self hideMultiselection];
         }
 
-        _multiselect = multiselect;
         [self setupGestureRecognizers];
         [self updateStateAnimated:NO];
     }
@@ -1880,5 +1782,18 @@
     return _endDate ? : _highlightedDate;
 }
 
+- (id)dequeueReusableViewWithIdentifier:(NSString *)identifier creationBlock:(id (^)())block
+{
+    ABViewPool *pool = nil;
+    if (!_reusableViewPulls) {
+        _reusableViewPulls = [NSMutableDictionary dictionaryWithCapacity:1];
+    }
+    pool = _reusableViewPulls[identifier];
+    if (!pool) {
+        pool = [ABViewPool new];
+        _reusableViewPulls[identifier] = pool;
+    }
 
+    return [pool giveExistingOrCreateNewWith:block];
+}
 @end

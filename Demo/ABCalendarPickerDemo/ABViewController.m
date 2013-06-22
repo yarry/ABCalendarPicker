@@ -10,27 +10,24 @@
 #import <ABCalendarPicker/ABCalendarPicker.h>
 #import "ABViewController.h"
 
-@interface ABViewController () <UITableViewDelegate,UITableViewDataSource,ABCalendarPickerDelegateProtocol,ABCalendarPickerDataSourceProtocol>
-@property (assign, nonatomic) IBOutlet ABCalendarPicker *calendarPicker;
-@property (strong, nonatomic) UIImageView * calendarShadow;
-@property (unsafe_unretained, nonatomic) IBOutlet UITableView *eventsTable;
-@property (unsafe_unretained, nonatomic) IBOutlet UIView *configPanel;
+@interface ABViewController () <UITableViewDelegate, UITableViewDataSource, ABCalendarPickerDelegateProtocol, ABCalendarPickerDataSourceProtocol>
+@property(assign, nonatomic) IBOutlet ABCalendarPicker *calendarPicker;
+@property(strong, nonatomic) UIImageView *calendarShadow;
+@property(unsafe_unretained, nonatomic) IBOutlet UITableView *eventsTable;
+@property(unsafe_unretained, nonatomic) IBOutlet UIView *configPanel;
 
-@property (nonatomic) EKEventStore * store;
+@property(nonatomic) EKEventStore *store;
 @end
 
 @implementation ABViewController
 
 - (EKEventStore *)store
 {
-    if (_store == nil)
-    {
+    if (_store == nil) {
         _store = [[EKEventStore alloc] init];
-        if ([[EKEventStore class] resolveClassMethod:@selector(authorizationStatusForEntityType:)])
-        {
+        if ([[EKEventStore class] resolveClassMethod:@selector(authorizationStatusForEntityType:)]) {
             if ([EKEventStore authorizationStatusForEntityType:(EKEntityTypeEvent)] != EKAuthorizationStatusAuthorized)
-                [_store requestAccessToEntityType:(EKEntityTypeEvent) completion:^(BOOL granted, NSError *error) {
-                    ;
+                [_store requestAccessToEntityType:(EKEntityTypeEvent) completion:^(BOOL granted, NSError *error) {;
                 }];
         }
     }
@@ -39,21 +36,22 @@
 
 - (NSArray *)eventsForDate:(NSDate *)date
 {
-    NSDateComponents * componentsBegin = [self.calendarPicker.calendar components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:date];
-    NSDateComponents * componentsDay = [[NSDateComponents alloc] init];
+    NSDateComponents *componentsBegin =
+            [self.calendarPicker.calendar components:NSYearCalendarUnit | NSMonthCalendarUnit |
+                    NSDayCalendarUnit       fromDate:date];
+    NSDateComponents *componentsDay = [[NSDateComponents alloc] init];
     componentsDay.day = 1;
-    
-    NSDate * dayBegin = [self.calendarPicker.calendar dateFromComponents:componentsBegin];
-    NSDate * dayEnd = [self.calendarPicker.calendar dateByAddingComponents:componentsDay toDate:dayBegin options:0];
-    
-    NSPredicate * predicate = [self.store predicateForEventsWithStartDate:dayBegin endDate:dayEnd calendars:nil];
+
+    NSDate *dayBegin = [self.calendarPicker.calendar dateFromComponents:componentsBegin];
+    NSDate *dayEnd = [self.calendarPicker.calendar dateByAddingComponents:componentsDay toDate:dayBegin options:0];
+
+    NSPredicate *predicate = [self.store predicateForEventsWithStartDate:dayBegin endDate:dayEnd calendars:nil];
     return [self.store eventsMatchingPredicate:predicate];
 }
 
-- (UIImageView*)calendarShadow
+- (UIImageView *)calendarShadow
 {
-    if (_calendarShadow == nil)
-    {
+    if (_calendarShadow == nil) {
         _calendarShadow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"CalendarShadow"]];
         _calendarShadow.opaque = NO;
     }
@@ -66,17 +64,17 @@
     [UIView animateWithDuration:0.3
                           delay:0.0
                         options:(UIViewAnimationOptionCurveEaseInOut)
-                     animations:^{
-                         CGFloat y = self.view.bounds.size.height;
-                         CGFloat delta = self.configPanel.bounds.size.height / 2;
-                         if (self.configPanel.center.y < self.view.bounds.size.height)
-                             y += delta;
-                         else
-                             y -= delta;
-                         self.configPanel.center = CGPointMake(self.configPanel.center.x, y);
-                     } completion:^(BOOL finished) {
-                         self.view.userInteractionEnabled = YES;
-                     }];
+            animations:^{
+                CGFloat y = self.view.bounds.size.height;
+                CGFloat delta = self.configPanel.bounds.size.height / 2;
+                if (self.configPanel.center.y < self.view.bounds.size.height)
+                    y += delta;
+                else
+                    y -= delta;
+                self.configPanel.center = CGPointMake(self.configPanel.center.x, y);
+            } completion:^(BOOL finished) {
+        self.view.userInteractionEnabled = YES;
+    }];
 }
 
 - (IBAction)todayTapped:(id)sender
@@ -92,9 +90,17 @@
         [self.calendarPicker setMonthsProvider:[[ABCalendarPickerDefaultSeasonedMonthsProvider alloc] init]];
 }
 
+- (IBAction)selectionStyleChange:(UISegmentedControl *)sender
+{
+    if (sender.selectedSegmentIndex == 0)
+        [self.calendarPicker setMultiselect:NO];
+    else
+        [self.calendarPicker setMultiselect:YES];
+}
+
 - (IBAction)firstWeekdayChange:(UISegmentedControl *)sender
 {
-    self.calendarPicker.calendar.firstWeekday = (sender.selectedSegmentIndex + 1)%7 + 1;
+    self.calendarPicker.calendar.firstWeekday = (sender.selectedSegmentIndex + 1) % 7 + 1;
     [self.calendarPicker updateStateAnimated:YES];
 }
 
@@ -112,24 +118,23 @@
 - (void)calendarPicker:(ABCalendarPicker *)calendarPicker
       animateNewHeight:(CGFloat)height
 {
-    self.calendarShadow.frame = CGRectMake(0,CGRectGetMaxY(self.calendarPicker.frame),
-                                           self.calendarPicker.frame.size.width,
-                                           self.calendarShadow.frame.size.height);
+    self.calendarShadow.frame = CGRectMake(0, CGRectGetMaxY(self.calendarPicker.frame),
+            self.calendarPicker.frame.size.width,
+            self.calendarShadow.frame.size.height);
     self.eventsTable.frame = CGRectMake(0, CGRectGetMaxY(self.calendarPicker.frame),
-                                        self.eventsTable.bounds.size.width,
-                                        self.view.bounds.size.height - self.calendarPicker.bounds.size.height);
+            self.eventsTable.bounds.size.width,
+            self.view.bounds.size.height - self.calendarPicker.bounds.size.height);
 }
 
-- (NSInteger)calendarPicker:(ABCalendarPicker*)calendarPicker
-      numberOfEventsForDate:(NSDate*)date
+- (NSInteger)calendarPicker:(ABCalendarPicker *)calendarPicker
+      numberOfEventsForDate:(NSDate *)date
                     onState:(ABCalendarPickerState)state
 {
     if (state != ABCalendarPickerStateDays
-        && state != ABCalendarPickerStateWeekdays)
-    {
+            && state != ABCalendarPickerStateWeekdays) {
         return 0;
     }
-    
+
     return [[self eventsForDate:date] count];
 }
 
@@ -145,23 +150,23 @@
 - (NSInteger)tableView:(UITableView *)tableView
  numberOfRowsInSection:(NSInteger)section
 {
-    NSArray * events = [self eventsForDate:self.calendarPicker.highlightedDate];
+    NSArray *events = [self eventsForDate:self.calendarPicker.highlightedDate];
     return [events count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"CELL_EVENT"];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"CELL_EVENT"];
     if (cell == nil)
         cell = [[UITableViewCell alloc] initWithStyle:(UITableViewCellStyleSubtitle) reuseIdentifier:@"CELL_EVENT"];
-    
-    NSArray * events = [self eventsForDate:self.calendarPicker.highlightedDate];
-    EKEvent * event = [events objectAtIndex:indexPath.row];
-    
+
+    NSArray *events = [self eventsForDate:self.calendarPicker.highlightedDate];
+    EKEvent *event = [events objectAtIndex:indexPath.row];
+
     cell.textLabel.text = event.title;
     cell.detailTextLabel.text = event.notes;
-    
+
     return cell;
 }
 
@@ -170,20 +175,19 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
     self.eventsTable.delegate = self;
     self.eventsTable.dataSource = self;
-    
+
     self.calendarPicker.delegate = self;
     self.calendarPicker.dataSource = self;
-    self.calendarPicker.multiselect = YES;
 
     [self.view addSubview:self.calendarShadow];
     [self calendarPicker:self.calendarPicker animateNewHeight:self.calendarPicker.bounds.size.height];
 
     [self configTapped:nil];
-    
-	// Do any additional setup after loading the view, typically from a nib.
+
+    // Do any additional setup after loading the view, typically from a nib.
 }
 
 - (void)didReceiveMemoryWarning
@@ -192,7 +196,8 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)viewDidUnload {
+- (void)viewDidUnload
+{
     [self setCalendarPicker:nil];
     [self setEventsTable:nil];
     [self setConfigPanel:nil];
