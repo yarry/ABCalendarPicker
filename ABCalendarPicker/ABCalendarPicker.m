@@ -853,7 +853,6 @@ static const int DefaultGradientBarHeight = 50;
     self.titleButton.frame = CGRectMake(self.titleLabel.center.x - buttonWidth / 2, 0, buttonWidth, 45);
 
     self.titleLabel.text = [provider titleText];
-
     self.gradientBar.image = [self.styleProvider patternImageForGradientBar];
 }
 
@@ -1789,22 +1788,22 @@ static const int DefaultGradientBarHeight = 50;
 - (void)setSelectedDate:(NSDate *)date animated:(BOOL)animated
 {
     self.selectedDate = date;
-    [self updateStateAnimated:animated];
+    [self shouldUpdateAnimated:animated ];
 }
 
 - (void)setHighlightedAndSectedDate:(NSDate *)date animated:(BOOL)animated
 {
     self.selectedDate = date;
     self.highlightedDate = date;
-    [self updateStateAnimated:animated];
+    [self shouldUpdateAnimated:animated ];
 }
 
 - (void)highlightDateFrom:(NSDate *)startDate to:(NSDate *)endDate animated:(BOOL)animated
 {
-    self.highlightedDate = startDate;
+    //self.highlightedDate = startDate;
     _startDate = startDate;
     _endDate = endDate;
-    [self updateStateAnimated:animated];
+    [self shouldUpdateAnimated:animated ];
 }
 
 - (void)setMultiselect:(BOOL)multiselect
