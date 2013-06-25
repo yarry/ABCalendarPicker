@@ -17,7 +17,11 @@
 
 static const int DefaultGradientBarHeight = 50;
 
+
+
+
 @interface ABCalendarPicker () <UIGestureRecognizerDelegate>
+
 @property(strong, nonatomic) NSMutableArray *controls;
 @property(strong, nonatomic) NSMutableArray *columnLabels;
 @property(strong, nonatomic) UILabel *titleLabel;
@@ -69,6 +73,9 @@ static const int DefaultGradientBarHeight = 50;
     BOOL _multiselectionStarted;
     NSMutableSet *_disabledControls;
     NSMutableDictionary *_reusableViewPulls;
+    NSMutableSet *_highlightedDates;
+    id _selectionStartDate;
+    NSDate *_selectionEndDate;
 }
 
 @synthesize delegate = _delegate;
@@ -507,59 +514,71 @@ static const int DefaultGradientBarHeight = 50;
     if (control) {
         NSDate *date = [self.currentProvider dateForRow:row andColumn:column];
 
-        [self hideMultiselection];
-
-        BOOL needScrollPrev = NO;
-        BOOL needScrollNext = NO;
-
-        if ([(id) [self currentProvider] respondsToSelector:@selector(mainDateBegin)]
-                && [(id) [self currentProvider] respondsToSelector:@selector(mainDateEnd)]) {
-            NSDate *mainDateBegin = [[self currentProvider] mainDateBegin];
-            NSDate *mainDateEnd = [[self currentProvider] mainDateEnd];
-            needScrollPrev = ([date compare:mainDateBegin] < 0);
-            needScrollNext = ([date compare:mainDateEnd] > 0);
-        }
-
-        if (!control.enabled && !needScrollPrev && !needScrollNext) {
-            needScrollPrev = YES;
-            needScrollNext = YES;
-        }
-
-        if (!needScrollPrev && !needScrollNext) {
-            if (!control.highlighted) {
-                // Lets highlight
-                self.highlightedDate = date;
-                [self hilightControl:control];
-
+        if(self.multiselect) {
+            if([_highlightedDates containsObject:date]) {
+                [_highlightedDates removeObject:date];
             }
             else {
-                // Lets segue in
-                NSInteger index = [self.providers indexOfObject:self.currentProvider];
-                if (index > 0 && (self.providers)[index - 1] != nil)
-                    [self setState:self.currentState - 1 animated:YES];
-                else if (self.currentState == ABCalendarPickerStateWeekdays)
-                    [self setState:self.currentState + 1 animated:YES];
+                [_highlightedDates addObject:date];
             }
+            [self applyHighlightedRange];
+            [self updateHilightedCells];
         }
         else {
-            // Lets segue prev or next
-            self.highlightedDate = date;
+            [self hideMultiselection];
 
-            ABCalendarPickerAnimation animation;
-            if (needScrollPrev && needScrollNext)
-                animation = ABCalendarPickerAnimationTransition;
-            else if (needScrollPrev)
-                animation = [self.currentProvider animationForPrev];
-            else if (needScrollNext)
-                animation = [self.currentProvider animationForNext];
-            else
-                animation = ABCalendarPickerAnimationTransition;
+            BOOL needScrollPrev = NO;
+            BOOL needScrollNext = NO;
 
-            [self changeStateTo:self.currentState
-                      fromState:self.currentState
-                      animation:animation
-                     canDiffuse:[self.currentProvider canDiffuse]];
-            return;
+            if ([(id) [self currentProvider] respondsToSelector:@selector(mainDateBegin)]
+                    && [(id) [self currentProvider] respondsToSelector:@selector(mainDateEnd)]) {
+                NSDate *mainDateBegin = [[self currentProvider] mainDateBegin];
+                NSDate *mainDateEnd = [[self currentProvider] mainDateEnd];
+                needScrollPrev = ([date compare:mainDateBegin] < 0);
+                needScrollNext = ([date compare:mainDateEnd] > 0);
+            }
+
+            if (!control.enabled && !needScrollPrev && !needScrollNext) {
+                needScrollPrev = YES;
+                needScrollNext = YES;
+            }
+
+            if (!needScrollPrev && !needScrollNext) {
+                if (!control.highlighted) {
+                    // Lets highlight
+                    self.highlightedDate = date;
+                    [self hilightControl:control];
+
+                }
+                else {
+                    // Lets segue in
+                    NSInteger index = [self.providers indexOfObject:self.currentProvider];
+                    if (index > 0 && (self.providers)[index - 1] != nil)
+                        [self setState:self.currentState - 1 animated:YES];
+                    else if (self.currentState == ABCalendarPickerStateWeekdays)
+                        [self setState:self.currentState + 1 animated:YES];
+                }
+            }
+            else {
+                // Lets segue prev or next
+                self.highlightedDate = date;
+
+                ABCalendarPickerAnimation animation;
+                if (needScrollPrev && needScrollNext)
+                    animation = ABCalendarPickerAnimationTransition;
+                else if (needScrollPrev)
+                    animation = [self.currentProvider animationForPrev];
+                else if (needScrollNext)
+                    animation = [self.currentProvider animationForNext];
+                else
+                    animation = ABCalendarPickerAnimationTransition;
+
+                [self changeStateTo:self.currentState
+                          fromState:self.currentState
+                          animation:animation
+                         canDiffuse:[self.currentProvider canDiffuse]];
+                return;
+            }
         }
     }
 }
@@ -615,6 +634,7 @@ static const int DefaultGradientBarHeight = 50;
 
                     }
                     else {
+                        [self applyHighlightedRange];
                         _selectionStart = path;
                         _selectionEnd = path;
                         _startDate = date;
@@ -622,7 +642,6 @@ static const int DefaultGradientBarHeight = 50;
                     }
                 }
             }
-
             else {
                 UIControl *control = [self controlForPoint:point row:&row column:&column];
                 NSDate *date = [self.currentProvider dateForRow:row andColumn:column];
@@ -632,7 +651,7 @@ static const int DefaultGradientBarHeight = 50;
                     if (![_endDate isEqualToDate:date]) {
                         _endDate = date;
                         _selectionEnd = [self indexPathForRow:row column:column];
-                        [self highlightRange];
+                        [self updateHighlightedRangeFrom:_startDate to:date];
                     }
                 }
             }
@@ -660,7 +679,7 @@ static const int DefaultGradientBarHeight = 50;
 {
     if (_startDate && _endDate) {
         [self endMultiselection];
-        [self highlightRange];
+        [self updateHilightedCells];
     }
 }
 
@@ -672,10 +691,64 @@ static const int DefaultGradientBarHeight = 50;
     _endDate = nil;
 }
 
-- (void)highlightRange
+- (void)updateHilightedCells
 {
     [self highlightRangeForProvider:self.currentProvider andState:self.currentState];
 }
+
+- (void)applyHighlightedRange
+{
+    _selectionStartDate = nil;
+    _selectionEndDate = nil;
+    _startDate = nil;
+    _endDate = nil;
+}
+
+- (void)updateHighlightedRangeFrom:(NSDate *)from to:(NSDate *)to
+{
+    NSDate *newStart,*newEnd;
+    if([from timeIntervalSinceDate:to] > 0) {
+        newStart = to;
+        newEnd = from;
+    }
+    else {
+        newStart = from;
+        newEnd = to;
+    }
+
+    // remove current
+    if(_selectionStartDate && _selectionEndDate) {
+        [self enumerateDaysFrom:_selectionStartDate to:_selectionEndDate withBlock:^(NSDate *date) {
+            [_highlightedDates removeObject:date];
+        }];
+    }
+
+    _selectionStartDate = newStart;
+    _selectionEndDate = newEnd;
+
+    if(_selectionStartDate && _selectionEndDate) {
+        [self enumerateDaysFrom:_selectionStartDate to:_selectionEndDate withBlock:^(NSDate *date) {
+            [_highlightedDates addObject:date];
+        }];
+    }
+    [self updateHilightedCells];
+}
+
+- (void)enumerateDaysFrom:(NSDate *) startDate to:(NSDate *)endDate withBlock:(void(^)(NSDate *date))block
+{
+    NSDateComponents *dayDifference = [[NSDateComponents alloc] init];
+
+    NSUInteger dayOffset = 1;
+    NSDate *nextDate = startDate;
+    do {
+        block(nextDate);
+        [dayDifference setDay:dayOffset++];
+        NSDate *d = [[NSCalendar currentCalendar] dateByAddingComponents:dayDifference toDate:startDate options:0];
+        nextDate = d;
+
+    } while([nextDate compare:endDate] != NSOrderedDescending);
+}
+
 
 - (void)highlightRangeForProvider:(id <ABCalendarPickerDateProviderProtocol>)provider andState:(ABCalendarPickerState)state
 {
@@ -714,7 +787,10 @@ static const int DefaultGradientBarHeight = 50;
             UIControl *control = arr[j];
             NSDate *date = [provider dateForRow:i andColumn:j];
 
-            if ([date timeIntervalSinceDate:startDate] >= 0 && [date timeIntervalSinceDate:endDate] <= 0) {
+            if([_highlightedDates containsObject:date]) {
+                [self hilightControlForMultiselect:control];
+            }
+            else if ([date timeIntervalSinceDate:startDate] >= 0 && [date timeIntervalSinceDate:endDate] <= 0) {
 
                 if ([date timeIntervalSinceDate:maxDate] > 0) {
                     maxDate = date;
@@ -724,7 +800,6 @@ static const int DefaultGradientBarHeight = 50;
                     minDate = date;
                     selectionStart = [NSIndexPath indexPathForRow:i inSection:j];
                 }
-
                 [self hilightControlForMultiselect:control];
             }
             else {
@@ -1299,6 +1374,7 @@ static const int DefaultGradientBarHeight = 50;
 
     [self processChangeFromState:fromState toState:toState animation:animation canDiffuse:canDiffuse];
 
+    [self updateHilightedCells];
     self.styleChanged = NO;
     self.shouldUpdate = NO;
 }
@@ -1663,7 +1739,7 @@ static const int DefaultGradientBarHeight = 50;
             [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapDetected:)];
     [self addGestureRecognizer:singleTapRecognizer];
 
-    if (_multiselect) {
+    if (self.multiselect) {
 
         UIPanGestureRecognizer *panRecognizer =
                 [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panDetected:)];
@@ -1740,6 +1816,33 @@ static const int DefaultGradientBarHeight = 50;
 #pragma mark -
 #pragma mark Public Methods
 
+
+- (void)setSelectionStyle:(ABCalendarPickerSelectionStyle)selectionStyle {
+
+    if (_selectionStyle != selectionStyle) {
+
+        _selectionStyle = selectionStyle;
+
+
+        [self updateCurrentMultiselection];
+        [self setupGestureRecognizers];
+        [self shouldUpdateAnimated:YES ];
+    }
+}
+
+- (void)updateCurrentMultiselection {
+
+    if (_selectionStyle&ABCalendarPickerRangeSelection == 0) {
+        [self hideMultiselection];
+    }
+    else if(_selectionStyle & ABCalendarPickerMultipleSelection){
+        if(!_highlightedDates) {
+            _highlightedDates = [NSMutableSet new];
+        }
+
+    }
+}
+
 - (void)updateStateAnimated:(BOOL)animated
 {
     [self setState:self.currentState animated:animated];
@@ -1800,25 +1903,32 @@ static const int DefaultGradientBarHeight = 50;
 
 - (void)highlightDateFrom:(NSDate *)startDate to:(NSDate *)endDate animated:(BOOL)animated
 {
+    [self clearHighlights];
+
     //self.highlightedDate = startDate;
     _startDate = startDate;
     _endDate = endDate;
+    [self updateHighlightedRangeFrom:startDate to:endDate];
     [self shouldUpdateAnimated:animated ];
+}
+
+- (void)clearHighlights {
+    [self endMultiselection];
+    [self hideMultiselection];
+    [_highlightedDates removeAllObjects];
 }
 
 - (void)setMultiselect:(BOOL)multiselect
 {
-    if (_multiselect != multiselect) {
+    [self setSelectionStyle:multiselect ? ABCalendarPickerMultipleSelection : ABCalendarPickerSingleSelection];
+}
 
-        _multiselect = multiselect;
+- (BOOL)multiselect {
+    return (self.selectionStyle & ABCalendarPickerMultipleSelection) == ABCalendarPickerMultipleSelection;
+}
 
-        if (!_multiselect) {
-            [self hideMultiselection];
-        }
-
-        [self setupGestureRecognizers];
-        [self shouldUpdateAnimated:YES ];
-    }
+- (BOOL)rangeSelect {
+    return (self.selectionStyle & ABCalendarPickerRangeSelection) == ABCalendarPickerRangeSelection;
 }
 
 - (void)shouldUpdateAnimated:(BOOL)animated
@@ -1837,6 +1947,29 @@ static const int DefaultGradientBarHeight = 50;
     }
 }
 
+
+- (NSArray *)highlightedDates {
+    return [[_highlightedDates allObjects] sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+        return [a compare:b];
+    }];
+}
+
+- (void)setHighlightedDates:(NSArray *)highlightedDates {
+
+    if(highlightedDates.count) {
+        self.highlightedDate = highlightedDates[0];
+    }
+    if(self.multiselect) {
+        _highlightedDates = [NSMutableSet setWithArray:highlightedDates];
+    }
+    else if(self.rangeSelect) {
+
+    }
+    else {
+
+    }
+    [self shouldUpdateAnimated:YES];
+}
 
 - (NSDate *)startDate
 {

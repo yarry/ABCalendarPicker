@@ -35,6 +35,13 @@
  
  */
 
+typedef enum
+{
+    ABCalendarPickerSingleSelection = 0,
+    ABCalendarPickerRangeSelection = 1,
+    ABCalendarPickerMultipleSelection = 3,
+} ABCalendarPickerSelectionStyle;
+
 @interface ABCalendarPicker : UIView <ABCalendarPickerDateOwner>
 
 /// ----------------------------------------------------------------
@@ -92,6 +99,8 @@
 
 @property(nonatomic) BOOL multiselect;
 
+@property (nonatomic) ABCalendarPickerSelectionStyle selectionStyle;
+
 - (void)updateStateAnimated:(BOOL)animated;
 
 - (void)setDate:(NSDate *)date andState:(ABCalendarPickerState)state animated:(BOOL)animated;
@@ -104,9 +113,14 @@
 
 - (void)highlightDateFrom:(NSDate *)startDate to:(NSDate *)endDate animated:(BOOL)animated;
 
+@property(nonatomic,copy) NSArray * highlightedDates;
+
 - (NSDate *)startDate;
 
 - (NSDate *)endDate;
 
 - (id)dequeueReusableViewWithIdentifier:(NSString *)identifier creationBlock:(id (^)())block;
+
+
+
 @end
