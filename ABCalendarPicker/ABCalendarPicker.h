@@ -113,7 +113,7 @@ typedef enum
 
 - (void)highlightDateFrom:(NSDate *)startDate to:(NSDate *)endDate animated:(BOOL)animated;
 
-@property(nonatomic,copy) NSArray * highlightedDates;
+@property(nonatomic,copy) NSArray *dates;
 
 - (NSDate *)startDate;
 
