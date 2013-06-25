@@ -18,8 +18,6 @@
 static const int DefaultGradientBarHeight = 50;
 
 
-
-
 @interface ABCalendarPicker () <UIGestureRecognizerDelegate>
 
 @property(strong, nonatomic) NSMutableArray *controls;
@@ -510,20 +508,16 @@ static const int DefaultGradientBarHeight = 50;
     if (control) {
         NSDate *date = [self.currentProvider dateForRow:row andColumn:column];
 
-        if(self.multiselect) {
+        if (self.multiselect) {
             if ([_highlighedDates containsObject:date]) {
                 [_highlighedDates removeObject:date];
             }
             else {
                 [_highlighedDates addObject:date];
-                //self.highlightedDate = date;
             }
-            [self applyHighlightedRange];
-            [self updateHilightedCells];
+            [self updateHighlight];
         }
         else {
-            [self hideMultiselection];
-
             BOOL needScrollPrev = NO;
             BOOL needScrollNext = NO;
 
@@ -541,7 +535,7 @@ static const int DefaultGradientBarHeight = 50;
             }
 
             if (!needScrollPrev && !needScrollNext) {
-                if (!control.highlighted) {
+                if (![date isEqualToDate:self.highlightedDate]) {
                     // Lets highlight
                     self.highlightedDate = date;
                     [self hilightControl:control];
@@ -574,8 +568,9 @@ static const int DefaultGradientBarHeight = 50;
                           fromState:self.currentState
                           animation:animation
                          canDiffuse:[self.currentProvider canDiffuse]];
-                return;
             }
+            [self applyHighlightedRange];
+            [self updateHighlightedRangeFrom:date to:date];
         }
     }
 }
@@ -647,62 +642,59 @@ static const int DefaultGradientBarHeight = 50;
 
                 if (control) {
                     if (![_endDate isEqualToDate:date]) {
-                        if (self.multiselect) {
+                        NSDateComponents *dayDifference = [[NSDateComponents alloc] init];
+                        if (!_startDate) {
+                            _startDate = _endDate;
+                            _endDate = date;
 
-                            NSDateComponents *dayDifference = [[NSDateComponents alloc] init];
-                            if (!_startDate) {
-                                _startDate = _endDate;
-                                _endDate = date;
+                            // expand selection
+                            if ([_highlighedDates containsObject:_startDate]) {
 
-                                // expand selection
-                                if ([_highlighedDates containsObject:_startDate]) {
+                                // check courer cell
+                                [dayDifference setDay:+1];
+                                NSDate *nextDay =
+                                        [self.calendar dateByAddingComponents:dayDifference toDate:_startDate options:0];
+                                [dayDifference setDay:-1];
+                                NSDate *prevDay =
+                                        [self.calendar dateByAddingComponents:dayDifference toDate:_startDate options:0];
 
-                                    // check courer cell
-                                    [dayDifference setDay:+1];
-                                    NSDate *nextDay = [self.calendar dateByAddingComponents:dayDifference toDate:_startDate options:0];
-                                    [dayDifference setDay:-1];
-                                    NSDate *prevDay = [self.calendar dateByAddingComponents:dayDifference toDate:_startDate options:0];
+                                NSInteger dayLookupDirection = 0;
 
-                                    NSInteger dayLookupDirection = 0;
-
-                                    if (![_highlighedDates containsObject:prevDay]) { // left selection corner
+                                if (![_highlighedDates containsObject:prevDay]) { // left selection corner
+                                    dayLookupDirection = 2;
+                                }
+                                if (![_highlighedDates containsObject:nextDay]) { // right selectin corner
+                                    dayLookupDirection -= 1;
+                                }
+                                if (dayLookupDirection == 0) { // inside selection
+                                    if ([_endDate timeIntervalSinceDate:_startDate] > 0) {// forvartd
                                         dayLookupDirection = 2;
                                     }
-                                    if (![_highlighedDates containsObject:nextDay]) { // right selectin corner
-                                        dayLookupDirection -= 1;
+                                    else { // backward
+                                        dayLookupDirection = -1;
                                     }
-                                    if(dayLookupDirection == 0) { // inside selection
-                                        if ([_endDate timeIntervalSinceDate:_startDate] > 0) {// forvartd
-                                            dayLookupDirection = 2;
+                                }
+
+                                if (dayLookupDirection != 1) { // not lone cell
+
+                                    NSDate *lookupDate = _startDate;
+                                    _endDate = _startDate;
+                                    _startDate = date;
+
+                                    NSInteger dayOffset = 0;
+                                    while (true) {
+                                        dayOffset += dayLookupDirection > 0 ? 1 : -1;
+                                        [dayDifference setDay:dayOffset];
+                                        NSDate *d =
+                                                [self.calendar dateByAddingComponents:dayDifference toDate:lookupDate options:0];
+                                        if ([_highlighedDates containsObject:d]) {
+                                            _startDate = d;
                                         }
-                                        else { // backward
-                                            dayLookupDirection = -1;
-                                        }
-                                    }
-
-                                    if (dayLookupDirection != 1) { // not lone cell
-
-                                        NSDate *lookupDate = _startDate;
-                                        _endDate = _startDate;
-                                        _startDate = date;
-
-                                        NSInteger dayOffset = 0;
-                                        while (true) {
-                                            dayOffset += dayLookupDirection > 0 ? 1 : -1 ;
-                                            [dayDifference setDay:dayOffset];
-                                            NSDate *d = [self.calendar dateByAddingComponents:dayDifference toDate:lookupDate options:0];
-                                            if ([_highlighedDates containsObject:d]) {
-                                                _startDate = d;
-                                            }
-                                            else {
-                                                break;
-                                            }
+                                        else {
+                                            break;
                                         }
                                     }
                                 }
-                            }
-                            else {
-                                _endDate = date;
                             }
                         }
                         else {
@@ -731,7 +723,8 @@ static const int DefaultGradientBarHeight = 50;
     }
 }
 
-- (NSInteger)daysFrom:(NSDate *)d1 to:(NSDate *)d2 {
+- (NSInteger)daysFrom:(NSDate *)d1 to:(NSDate *)d2
+{
     NSTimeInterval time = [d1 timeIntervalSinceDate:d2];
     return (NSInteger) floorf(time / (60.0 * 60.0 * 24.0) + 0.5);
 }
@@ -741,20 +734,21 @@ static const int DefaultGradientBarHeight = 50;
 {
     if (_startDate && _endDate) {
         [self endRangeSelection];
-        [self updateHilightedCells];
+        [self updateHighlight];
     }
 }
 
-- (void)endRangeSelection {
+- (void)endRangeSelection
+{
     _selectionStartDate = nil;
     _selectionEndDate = nil;
     _startDate = nil;
     _endDate = nil;
 }
 
-- (void)updateHilightedCells
+- (void)updateHighlight
 {
-    [self highlightRangeForProvider:self.currentProvider andState:self.currentState];
+    [self updateHighlightForProvider:self.currentProvider andState:self.currentState];
 }
 
 - (void)applyHighlightedRange
@@ -767,8 +761,8 @@ static const int DefaultGradientBarHeight = 50;
 
 - (void)updateHighlightedRangeFrom:(NSDate *)from to:(NSDate *)to
 {
-    NSDate *newStart,*newEnd;
-    if([from timeIntervalSinceDate:to] > 0) {
+    NSDate *newStart, *newEnd;
+    if ([from timeIntervalSinceDate:to] > 0) {
         newStart = to;
         newEnd = from;
     }
@@ -777,25 +771,30 @@ static const int DefaultGradientBarHeight = 50;
         newEnd = to;
     }
 
-    // remove current
-    if(_selectionStartDate && _selectionEndDate) {
-        [self enumerateDaysFrom:_selectionStartDate to:_selectionEndDate withBlock:^(NSDate *date) {
-            [_highlighedDates removeObject:date];
-        }];
+    if (self.multiselect) {
+        // remove current
+        if (_selectionStartDate && _selectionEndDate) {
+            [self enumerateDaysFrom:_selectionStartDate to:_selectionEndDate withBlock:^(NSDate *date) {
+                [_highlighedDates removeObject:date];
+            }];
+        }
+    }
+    else {
+        [_highlighedDates removeAllObjects];
     }
 
     _selectionStartDate = newStart;
     _selectionEndDate = newEnd;
 
-    if(_selectionStartDate && _selectionEndDate) {
+    if (_selectionStartDate && _selectionEndDate) {
         [self enumerateDaysFrom:_selectionStartDate to:_selectionEndDate withBlock:^(NSDate *date) {
             [_highlighedDates addObject:date];
         }];
     }
-    [self updateHilightedCells];
+    [self updateHighlight];
 }
 
-- (void)enumerateDaysFrom:(NSDate *) startDate to:(NSDate *)endDate withBlock:(void(^)(NSDate *date))block
+- (void)enumerateDaysFrom:(NSDate *)startDate to:(NSDate *)endDate withBlock:(void (^)(NSDate *date))block
 {
     NSDateComponents *dayDifference = [[NSDateComponents alloc] init];
     NSUInteger dayOffset = 1;
@@ -805,17 +804,18 @@ static const int DefaultGradientBarHeight = 50;
         [dayDifference setDay:dayOffset++];
         NSDate *d = [self.calendar dateByAddingComponents:dayDifference toDate:startDate options:0];
         nextDate = d;
-    } while([nextDate compare:endDate] != NSOrderedDescending);
+    } while ([nextDate compare:endDate] != NSOrderedDescending);
 }
 
-- (NSDate *)midnightPartOfDate:(NSDate *)date {
+- (NSDate *)midnightPartOfDate:(NSDate *)date
+{
     unsigned int flags = NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit;
     NSCalendar *calendar = [NSCalendar currentCalendar];
     NSDateComponents *components = [calendar components:flags fromDate:date];
     return [calendar dateFromComponents:components];
 }
 
-- (void)highlightRangeForProvider:(id <ABCalendarPickerDateProviderProtocol>)provider andState:(ABCalendarPickerState)state
+- (void)updateHighlightForProvider:(id <ABCalendarPickerDateProviderProtocol>)provider andState:(ABCalendarPickerState)state
 {
     self.highlightedControl.highlighted = NO;
 
@@ -828,37 +828,56 @@ static const int DefaultGradientBarHeight = 50;
             UIControl *control = arr[j];
             NSDate *date = [provider dateForRow:i andColumn:j];
 
-            if ([_highlighedDates containsObject:date]) {
-                [self hilightControlForMultiselect:control];
+            if (self.multiselect) {
+                if ([_highlighedDates containsObject:date]) {
+                    [self makeControl:control appearHighlighted:YES ];
+                }
+                else {
+                    [self makeControl:control appearHighlighted:NO ];
+                }
             }
-            else if ([date timeIntervalSinceDate:_selectionStartDate] >= 0 && [date timeIntervalSinceDate:_selectionEndDate] <= 0) {
+            else if (self.rangeSelect) {
+                if ([date timeIntervalSinceDate:_selectionStartDate] >= 0 &&
+                        [date timeIntervalSinceDate:_selectionEndDate] <= 0) {
 
-                if ([date timeIntervalSinceDate:maxDate] > 0) {
-                    maxDate = date;
+                    if ([date timeIntervalSinceDate:maxDate] > 0) {
+                        maxDate = date;
+                    }
+                    if ([date timeIntervalSinceDate:minDate] < 0) {
+                        minDate = date;
+                    }
+                    [self makeControl:control appearHighlighted:YES ];
                 }
-                if ([date timeIntervalSinceDate:minDate] < 0) {
-                    minDate = date;
+                else {
+                    [self makeControl:control appearHighlighted:NO ];
                 }
-                [self hilightControlForMultiselect:control];
             }
             else {
-                control.highlighted = NO;
+                if([date isEqual:self.highlightedDate]) {
+                    [self makeControl:control appearHighlighted:YES ];
+                }
+                else {
+                    [self makeControl:control appearHighlighted:NO ];
+                }
             }
         }
     }
 }
 
-- (void)hilightControlForMultiselect:(UIControl *)control
+- (void)makeControl:(UIControl *)control appearHighlighted:(BOOL)highlighted
 {
+    if(highlighted) {
     if (control) {
         if (!control.enabled) {
-            //[_disabledControls addObject:control];
             control.enabled = YES;
             control.highlighted = YES;
             control.enabled = NO;
         }
         control.highlighted = YES;
-        //[_highlightedControls addObject:control];
+    }
+    }
+    else {
+        control.highlighted = NO;
     }
 }
 
@@ -870,7 +889,7 @@ static const int DefaultGradientBarHeight = 50;
     NSInteger columnsCount = [provider columnsCount];
     CGFloat buttonWidth = self.bounds.size.width / columnsCount;
 
-    CGFloat gradientBarHeight = [self.styleProvider gradientBarHeight] ?: DefaultGradientBarHeight;
+    CGFloat gradientBarHeight = [self.styleProvider gradientBarHeight] ? : DefaultGradientBarHeight;
 
     if (self.columnLabels != nil)
         for (UILabel *label in self.columnLabels)
@@ -883,7 +902,8 @@ static const int DefaultGradientBarHeight = 50;
             continue;
 
         UILabel *columnLabel =
-                [[UILabel alloc] initWithFrame:CGRectMake(floor(j * buttonWidth), gradientBarHeight - 12, buttonWidth, 12)];
+                [[UILabel alloc] initWithFrame:CGRectMake(floor(j * buttonWidth),
+                        gradientBarHeight - 12, buttonWidth, 12)];
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000
         columnLabel.textAlignment = NSTextAlignmentCenter;
 #else
@@ -940,7 +960,7 @@ static const int DefaultGradientBarHeight = 50;
     if (self.titleButton.superview == nil)
         [self addSubview:self.titleButton];
 
-    CGFloat gradientBarHeight = [self.styleProvider gradientBarHeight] ?: DefaultGradientBarHeight;
+    CGFloat gradientBarHeight = [self.styleProvider gradientBarHeight] ? : DefaultGradientBarHeight;
 
 
     CGFloat buttonWidth = 160;
@@ -955,11 +975,11 @@ static const int DefaultGradientBarHeight = 50;
 }
 
 
-- (UIView*)configureArrowView:(UIView *)currentArrow
-                    forAnimation:(ABCalendarPickerAnimation)animation
-                        state:(ABCalendarPickerState)state
-                     fastTap:(SEL)fastTapSel
-                     deepTap:(SEL)deepTapSel
+- (UIView *)configureArrowView:(UIView *)currentArrow
+                  forAnimation:(ABCalendarPickerAnimation)animation
+                         state:(ABCalendarPickerState)state
+                       fastTap:(SEL)fastTapSel
+                       deepTap:(SEL)deepTapSel
 {
     UITapGestureRecognizer *tapPress = [[UITapGestureRecognizer alloc] initWithTarget:self action:fastTapSel];
     UILongPressGestureRecognizer
@@ -968,7 +988,7 @@ static const int DefaultGradientBarHeight = 50;
     deepPress.cancelsTouchesInView = NO;
 
 
-    UIView* newArrow = [self.styleProvider calendarPicker:self arrowViewForAnimation:animation andState:state];
+    UIView *newArrow = [self.styleProvider calendarPicker:self arrowViewForAnimation:animation andState:state];
 
     for (UIGestureRecognizer *recognizer in newArrow.gestureRecognizers) {
         [newArrow removeGestureRecognizer:recognizer];
@@ -995,38 +1015,38 @@ static const int DefaultGradientBarHeight = 50;
     if ([provider respondsToSelector:@selector(animationForLongNext)]) {
         longNextAnimation = [provider animationForLongNext];
     }
-    BOOL noLongLeft  = (longPrevAnimation == ABCalendarPickerAnimationDisabled);
+    BOOL noLongLeft = (longPrevAnimation == ABCalendarPickerAnimationDisabled);
     BOOL noLongRight = (longNextAnimation == ABCalendarPickerAnimationDisabled);
 
 
-    if(self.styleChanged || fromState != toState || !_leftArrow || !_rightArrow) {
+    if (self.styleChanged || fromState != toState || !_leftArrow || !_rightArrow) {
 
 
         _leftArrow = [self configureArrowView:_leftArrow
-                    forAnimation:[provider animationForPrev]
-                           state:toState
-                         fastTap:@selector(leftButtonClicked:)
-                         deepTap:@selector(leftDeepPress:)];
+                                 forAnimation:[provider animationForPrev]
+                                        state:toState
+                                      fastTap:@selector(leftButtonClicked:)
+                                      deepTap:@selector(leftDeepPress:)];
 
         _rightArrow = [self configureArrowView:_rightArrow
-                    forAnimation:[provider animationForNext]
-                           state:toState
-                         fastTap:@selector(rightButtonClicked:)
-                         deepTap:@selector(rightDeepPress:)];
+                                  forAnimation:[provider animationForNext]
+                                         state:toState
+                                       fastTap:@selector(rightButtonClicked:)
+                                       deepTap:@selector(rightDeepPress:)];
 
         if (!noLongLeft && !noLongRight) {
 
             _longLeftArrow = [self configureArrowView:_longLeftArrow
-                                     forAnimation:longPrevAnimation
-                                            state:toState
-                                          fastTap:@selector(longLeftButtonClicked:)
-                                          deepTap:@selector(longLeftDeepPress:)];
+                                         forAnimation:longPrevAnimation
+                                                state:toState
+                                              fastTap:@selector(longLeftButtonClicked:)
+                                              deepTap:@selector(longLeftDeepPress:)];
 
             _longRightArrow = [self configureArrowView:_longRightArrow
-                                      forAnimation:longNextAnimation
-                                             state:toState
-                                           fastTap:@selector(longRightButtonClicked:)
-                                           deepTap:@selector(longRightDeepPress:)];
+                                          forAnimation:longNextAnimation
+                                                 state:toState
+                                               fastTap:@selector(longRightButtonClicked:)
+                                               deepTap:@selector(longRightDeepPress:)];
         }
         else {
 
@@ -1125,9 +1145,7 @@ static const int DefaultGradientBarHeight = 50;
             [[self.controls lastObject] addObject:control];
         }
     }
-    if (self.isMultiselected) {
-        [self highlightRangeForProvider:provider andState:state];
-    }
+    [self updateHighlightForProvider:provider andState:state];
 
     if (state == ABCalendarPickerStateDays
             && [(id) self.dataSource respondsToSelector:@selector(calendarPicker:numberOfEventsForDate:onState:)]) {
@@ -1392,7 +1410,7 @@ static const int DefaultGradientBarHeight = 50;
 
     [self processChangeFromState:fromState toState:toState animation:animation canDiffuse:canDiffuse];
 
-    [self updateHilightedCells];
+    [self updateHighlight];
     self.styleChanged = NO;
     self.shouldUpdate = NO;
 }
@@ -1403,7 +1421,7 @@ static const int DefaultGradientBarHeight = 50;
     if (toState != fromState) {
         if ([(id) self.delegate respondsToSelector:@selector(calendarPicker:shouldSetState:fromState:)]
                 && ![self.delegate calendarPicker:self shouldSetState:toState fromState:fromState]) {
-            if(!self.styleChanged) {
+            if (!self.styleChanged) {
                 self.userInteractionEnabled = YES;
                 return;
             }
@@ -1432,7 +1450,7 @@ static const int DefaultGradientBarHeight = 50;
     CGFloat buttonWidth = floorf((self.bounds.size.width + 2) / columnsCount);
     CGFloat buttonHeight = floorf(buttonWidth / [self.styleProvider buttonAspectRatioForState:toState]);
 
-    CGFloat gradientBarHeight = [self.styleProvider gradientBarHeight] ?: DefaultGradientBarHeight;
+    CGFloat gradientBarHeight = [self.styleProvider gradientBarHeight] ? : DefaultGradientBarHeight;
 
     CGFloat oldFrameBottom = self.frame.origin.y + self.frame.size.height;
     CGFloat newFrameHeight = gradientBarHeight + buttonHeight * rowsCount + 1;
@@ -1445,7 +1463,8 @@ static const int DefaultGradientBarHeight = 50;
 
     if (self.mainTileView == nil) {
         self.mainTileView =
-                [[UIView alloc] initWithFrame:CGRectMake(0, gradientBarHeight, self.frame.size.width, self.frame.size.height - gradientBarHeight)];
+                [[UIView alloc] initWithFrame:CGRectMake(0, gradientBarHeight, self.frame.size.width,
+                        self.frame.size.height - gradientBarHeight)];
         self.mainTileView.userInteractionEnabled = NO;
         self.mainTileView.clipsToBounds = YES;
         self.mainTileView.backgroundColor =
@@ -1482,7 +1501,8 @@ static const int DefaultGradientBarHeight = 50;
                 self.bottomExpanding ? self.frame.origin.y : (oldFrameBottom - newFrameHeight),
                 self.frame.size.width,
                 newFrameHeight);
-        self.mainTileView.frame = CGRectMake(0, gradientBarHeight, self.frame.size.width, self.frame.size.height - gradientBarHeight);
+        self.mainTileView.frame =
+                CGRectMake(0, gradientBarHeight, self.frame.size.width, self.frame.size.height - gradientBarHeight);
         if (oldFrameHeight != newFrameHeight) {
             if ([(id) self.delegate respondsToSelector:@selector(calendarPicker:animateNewHeight:)])
                 [self.delegate calendarPicker:self animateNewHeight:newFrameHeight];
@@ -1631,7 +1651,8 @@ static const int DefaultGradientBarHeight = 50;
             self.bottomExpanding ? self.frame.origin.y : (oldFrameBottom - newFrameHeight),
             self.frame.size.width,
             newFrameHeight);
-    self.mainTileView.frame = CGRectMake(0, gradientBarHeight, self.frame.size.width, self.frame.size.height - gradientBarHeight);
+    self.mainTileView.frame =
+            CGRectMake(0, gradientBarHeight, self.frame.size.width, self.frame.size.height - gradientBarHeight);
     if (oldFrameHeight != newFrameHeight) {
         if ([(id) self.delegate respondsToSelector:@selector(calendarPicker:animateNewHeight:)])
             [self.delegate calendarPicker:self animateNewHeight:newFrameHeight];
@@ -1757,7 +1778,7 @@ static const int DefaultGradientBarHeight = 50;
             [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapDetected:)];
     [self addGestureRecognizer:singleTapRecognizer];
 
-    if (self.multiselect) {
+    if (self.rangeSelect || self.multiselect) {
 
         UIPanGestureRecognizer *panRecognizer =
                 [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panDetected:)];
@@ -1835,31 +1856,28 @@ static const int DefaultGradientBarHeight = 50;
 #pragma mark Public Methods
 
 
-- (void)setSelectionStyle:(ABCalendarPickerSelectionStyle)selectionStyle {
-
+- (void)setSelectionStyle:(ABCalendarPickerSelectionStyle)selectionStyle
+{
     if (_selectionStyle != selectionStyle) {
 
         _selectionStyle = selectionStyle;
-
-
-        [self updateCurrentMultiselection];
+        if (!self.multiselect) {
+            _highlighedDates = nil;
+        }
+        else if (!_highlighedDates) {
+            _highlighedDates = [NSMutableSet set];
+            if (_selectionStartDate && _selectionEndDate) {
+                [self updateHighlightedRangeFrom:_selectionStartDate to:_selectionEndDate];
+            }
+            else {
+                [self updateHighlightedRangeFrom:self.highlightedDate to:self.highlightedDate];
+            }
+        }
         [self setupGestureRecognizers];
         [self shouldUpdateAnimated:YES ];
     }
 }
 
-- (void)updateCurrentMultiselection {
-
-    if (_selectionStyle&ABCalendarPickerRangeSelection == 0) {
-        [self hideMultiselection];
-    }
-    else if(_selectionStyle & ABCalendarPickerMultipleSelection){
-        if (!_highlighedDates) {
-            _highlighedDates = [NSMutableSet new];
-        }
-
-    }
-}
 
 - (void)updateStateAnimated:(BOOL)animated
 {
@@ -1877,7 +1895,7 @@ static const int DefaultGradientBarHeight = 50;
 - (void)setState:(ABCalendarPickerState)state animated:(BOOL)animated
 {
     ABCalendarPickerAnimation animation = ABCalendarPickerAnimationNone;
-    BOOL canDiffuse = NO;
+    NSInteger canDiffuse = 0;
     if (animated) {
         id <ABCalendarPickerDateProviderProtocol> fromProvider = self.currentProvider;
         id <ABCalendarPickerDateProviderProtocol> toProvider = [self providerForState:state];
@@ -1909,14 +1927,14 @@ static const int DefaultGradientBarHeight = 50;
 - (void)setSelectedDate:(NSDate *)date animated:(BOOL)animated
 {
     self.selectedDate = date;
-    [self shouldUpdateAnimated:animated ];
+    [self shouldUpdateAnimated:animated];
 }
 
 - (void)setHighlightedAndSectedDate:(NSDate *)date animated:(BOOL)animated
 {
     self.selectedDate = date;
     self.highlightedDate = date;
-    [self shouldUpdateAnimated:animated ];
+    [self shouldUpdateAnimated:animated];
 }
 
 - (void)highlightDateFrom:(NSDate *)startDate to:(NSDate *)endDate animated:(BOOL)animated
@@ -1927,10 +1945,11 @@ static const int DefaultGradientBarHeight = 50;
     _startDate = [self midnightPartOfDate:startDate];
     _endDate = [self midnightPartOfDate:endDate];
     [self updateHighlightedRangeFrom:startDate to:endDate];
-    [self shouldUpdateAnimated:animated ];
+    [self shouldUpdateAnimated:animated];
 }
 
-- (void)clearHighlights {
+- (void)clearHighlights
+{
     [self endRangeSelection];
     [self hideMultiselection];
     [_highlighedDates removeAllObjects];
@@ -1941,11 +1960,13 @@ static const int DefaultGradientBarHeight = 50;
     [self setSelectionStyle:multiselect ? ABCalendarPickerMultipleSelection : ABCalendarPickerSingleSelection];
 }
 
-- (BOOL)multiselect {
+- (BOOL)multiselect
+{
     return (self.selectionStyle & ABCalendarPickerMultipleSelection) == ABCalendarPickerMultipleSelection;
 }
 
-- (BOOL)rangeSelect {
+- (BOOL)rangeSelect
+{
     return (self.selectionStyle & ABCalendarPickerRangeSelection) == ABCalendarPickerRangeSelection;
 }
 
@@ -1960,20 +1981,22 @@ static const int DefaultGradientBarHeight = 50;
 - (void)willMoveToWindow:(UIWindow *)newWindow
 {
     [super willMoveToWindow:newWindow];
-    if(self.shouldUpdate) {
+    if (self.shouldUpdate) {
         [self updateStateAnimated:NO];
     }
 }
 
-- (NSArray *)dates {
+- (NSArray *)dates
+{
     return [[_highlighedDates allObjects] sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
         return [a compare:b];
     }];
 }
 
-- (void)setDates:(NSArray *)dates {
+- (void)setDates:(NSArray *)dates
+{
 
-    if(self.multiselect) {
+    if (self.multiselect) {
         _highlighedDates = [NSMutableSet setWithCapacity:dates.count];
         for (NSDate *date in dates) {
             [_highlighedDates addObject:[self midnightPartOfDate:date]];
@@ -1982,7 +2005,7 @@ static const int DefaultGradientBarHeight = 50;
             //self.highlightedDate = [self midnightPartOfDate:dates[0]];
         }
     }
-    else if(self.rangeSelect) {
+    else if (self.rangeSelect) {
 
     }
     else {

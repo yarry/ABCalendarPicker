@@ -93,9 +93,12 @@
 - (IBAction)selectionStyleChange:(UISegmentedControl *)sender
 {
     if (sender.selectedSegmentIndex == 0)
-        [self.calendarPicker setMultiselect:NO];
+        self.calendarPicker.selectionStyle = ABCalendarPickerSingleSelection;
+    else if (sender.selectedSegmentIndex == 1)
+        self.calendarPicker.selectionStyle = ABCalendarPickerRangeSelection;
     else
-        [self.calendarPicker setMultiselect:YES];
+        self.calendarPicker.selectionStyle = ABCalendarPickerMultipleSelection;
+
 }
 
 - (IBAction)firstWeekdayChange:(UISegmentedControl *)sender

@@ -35,12 +35,7 @@
  
  */
 
-typedef enum
-{
-    ABCalendarPickerSingleSelection = 0,
-    ABCalendarPickerRangeSelection = 1,
-    ABCalendarPickerMultipleSelection = 3,
-} ABCalendarPickerSelectionStyle;
+
 
 @interface ABCalendarPicker : UIView <ABCalendarPickerDateOwner>
 

@@ -35,7 +35,7 @@
 
 - (NSInteger)canDiffuse
 {
-    if (self.dateOwner.multiselect) {
+    if (self.dateOwner.selectionStyle != ABCalendarPickerSingleSelection) {
         return 3;
     }
     else {
@@ -135,7 +135,7 @@
 {
     NSInteger rows =
             [self.calendar rangeOfUnit:NSWeekCalendarUnit inUnit:NSMonthCalendarUnit forDate:[self.dateOwner highlightedDate]].length;
-    if (self.dateOwner.multiselect) {
+    if (self.dateOwner.selectionStyle != ABCalendarPickerSingleSelection) {
         rows += 2;
     }
     return rows;
@@ -163,7 +163,7 @@
              andColumn:(NSInteger)column
 {
     NSInteger index = row * 7 + column + 1;
-    if (self.dateOwner.multiselect) {
+    if (self.dateOwner.selectionStyle != ABCalendarPickerSingleSelection) {
         index -= 7;
     }
 

@@ -9,12 +9,19 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 
+typedef enum
+{
+    ABCalendarPickerSingleSelection = 0,
+    ABCalendarPickerRangeSelection = 1,
+    ABCalendarPickerMultipleSelection = 3,
+} ABCalendarPickerSelectionStyle;
+
 @protocol ABCalendarPickerDateOwner
 - (NSDate *)selectedDate;
 
 - (NSDate *)highlightedDate;
 
-- (BOOL)multiselect;
+- (ABCalendarPickerSelectionStyle)selectionStyle;
 @end
 
 typedef enum

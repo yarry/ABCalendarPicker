@@ -372,6 +372,7 @@
         [button setBackgroundImage:self.selectedImage forState:UIControlStateDisabled | UIControlStateSelected];
         [button setBackgroundImage:self.highlightedImage forState:UIControlStateHighlighted];
         [button setBackgroundImage:self.highlightedImage forState:UIControlStateDisabled | UIControlStateHighlighted];
+        [button setBackgroundImage:self.selectedHighlightedImage forState:UIControlStateDisabled | UIControlStateSelected | UIControlStateHighlighted];
         [button setBackgroundImage:self.selectedImage forState:UIControlStateSelected];
         [button setBackgroundImage:self.selectedHighlightedImage forState:UIControlStateSelected |
                 UIControlStateHighlighted];
