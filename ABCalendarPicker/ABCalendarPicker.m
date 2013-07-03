@@ -466,7 +466,7 @@ static const int DefaultGradientBarHeight = 50;
     if (control) {
         NSDate *date = [self.currentProvider dateForRow:row andColumn:column];
 
-        if (self.multiselect) {
+        if (self.multiselect && self.isShowingDays) {
             if ([_highlightedDates containsObject:date]) {
                 [_highlightedDates removeObject:date];
             }
@@ -531,6 +531,12 @@ static const int DefaultGradientBarHeight = 50;
             [self updateHighlightedRangeFrom:date to:date];
         }
     }
+}
+
+- (BOOL)isShowingDays
+{
+    return self.currentState == ABCalendarPickerStateWeekdays ||
+            self.currentState == ABCalendarPickerStateDays;
 }
 
 - (void)hilightControl:(UIControl *)control

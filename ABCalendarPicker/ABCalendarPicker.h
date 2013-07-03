@@ -118,5 +118,5 @@
 - (id)dequeueReusableViewWithIdentifier:(NSString *)identifier creationBlock:(id (^)())block;
 
 
-
+- (BOOL)isShowingDays;
 @end
