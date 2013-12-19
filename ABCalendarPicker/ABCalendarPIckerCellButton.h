@@ -1,5 +1,5 @@
 //
-//  UIMyButton.h
+//  ABCalendarPickerCellButton.h
 //  ABCalendarPicker
 //
 //  Created by Anton Bukov on 25.08.12.
@@ -8,11 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIMyButton : UIControl
+@interface ABCalendarPickerCellButton : UIControl
 
 @property(nonatomic) NSInteger numberOfDots;
 @property(nonatomic, strong) UIFont *tileTitleFont;
 @property(nonatomic, strong) UIFont *tileDotFont;
+@property (nonatomic) CGPoint tileDotOffset;
 
 - (NSString *)titleForState:(UIControlState)state;
 
@@ -27,6 +28,7 @@
 - (void)setTitle:(NSString *)title forState:(UIControlState)state;
 
 - (void)setTitleColor:(UIColor *)color forState:(UIControlState)state;
+- (void)setDotColor:(UIColor *)color forState:(UIControlState)state;
 
 - (void)setTitleShadowColor:(UIColor *)color forState:(UIControlState)state;
 

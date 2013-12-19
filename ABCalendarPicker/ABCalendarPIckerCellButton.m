@@ -1,5 +1,5 @@
 //
-//  UIMyButton.m
+//  ABCalendarPickerCellButton.m
 //  ABCalendarPicker
 //
 //  Created by Anton Bukov on 25.08.12.
@@ -7,25 +7,18 @@
 //
 
 #import <QuartzCore/QuartzCore.h>
-#import "UIMyButton.h"
+#import "ABCalendarPickerCellButton.h"
 
-@interface UIMyButton ()
+@interface ABCalendarPickerCellButton ()
 @property(nonatomic) NSMutableDictionary *titles;
 @property(nonatomic) NSMutableDictionary *titleColors;
+@property(nonatomic) NSMutableDictionary *dotColors;
 @property(nonatomic) NSMutableDictionary *titleShadowColors;
 @property(nonatomic) NSMutableDictionary *titleShadowOffsets;
 @property(nonatomic) NSMutableDictionary *backgroundImages;
 @end
 
-@implementation UIMyButton
-
-@synthesize numberOfDots = _numberOfDots;
-
-@synthesize titles = _titles;
-@synthesize titleColors = _titleColors;
-@synthesize titleShadowColors = _titleShadowColors;
-@synthesize titleShadowOffsets = _titleShadowOffsets;
-@synthesize backgroundImages = _backgroundImages;
+@implementation ABCalendarPickerCellButton
 
 #pragma mark -
 #pragma mark Properties section
@@ -61,6 +54,13 @@
     if (_titleColors == nil)
         _titleColors = [NSMutableDictionary dictionary];
     return _titleColors;
+}
+
+- (NSMutableDictionary *)dotColors
+{
+    if (_dotColors == nil)
+        _dotColors = [NSMutableDictionary dictionary];
+    return _dotColors;
 }
 
 - (NSMutableDictionary *)titleShadowColors
@@ -111,6 +111,17 @@
     return titleColor;
 }
 
+- (UIColor *)dotColorForState:(UIControlState)state
+{
+    UIColor *dotColor = [self.dotColors objectForKey:[NSNumber numberWithInt:state]];
+    if (dotColor == nil)
+        dotColor = [self.dotColors objectForKey:[NSNumber numberWithInt:UIControlStateNormal]];
+
+    if (dotColor == nil)
+        dotColor = [self titleColorForState:state];
+    return dotColor;
+}
+
 - (UIColor *)titleShadowColorForState:(UIControlState)state
 {
     UIColor *titleShadowColor = [self.titleShadowColors objectForKey:[NSNumber numberWithInt:state]];
@@ -137,6 +148,12 @@
 
 ////////////////////////////////////////////////////////////////
 
+- (void)setTileDotOffset:(CGPoint)tileDotOffset
+{
+    _tileDotOffset = tileDotOffset;
+    [self setNeedsDisplay];
+}
+
 - (void)setTitle:(NSString *)title forState:(UIControlState)state
 {
     [self.titles setObject:title forKey:[NSNumber numberWithInt:state]];
@@ -146,6 +163,13 @@
 - (void)setTitleColor:(UIColor *)color forState:(UIControlState)state
 {
     [self.titleColors setObject:color forKey:[NSNumber numberWithInt:state]];
+    if (self.state == state)
+        [self setNeedsDisplay];
+}
+
+- (void)setDotColor:(UIColor *)color forState:(UIControlState)state
+{
+    [self.dotColors setObject:color forKey:[NSNumber numberWithInt:state]];
     if (self.state == state)
         [self setNeedsDisplay];
 }
@@ -178,10 +202,9 @@
 {
     NSString *titleText = [self titleForState:self.state];
     UIColor *titleColor = [self titleColorForState:self.state];
+    UIColor *dotColor =   [self dotColorForState:self.state];
     UIColor *titleShadowColor = [self titleShadowColorForState:self.state];
     CGSize titleShadowOffset = [self titleShadowOffsetForState:self.state];
-    //UIImage * backgroundImage = [self backgroundImageForState:self.state];
-    //UIEdgeInsets capInsects = [self backgroundImageCapInsetsForState:self.state];
     NSString *dotsText = [@"" stringByPaddingToLength:self.numberOfDots withString:@"•" startingAtIndex:0];
 
     UIFont *titleFont = self.tileTitleFont;
@@ -195,38 +218,25 @@
     CGPoint dotsPoint = CGPointMake((self.bounds.size.width - dotsSize.width) / 2,
             self.bounds.size.height * 3 / 5);
 
-    /*
-    if (self.state == UIControlStateNormal || self.state == UIControlStateDisabled)
-    {
-        // Dirty speed up
-        if (self.barStyle == UIBarStyleBlack)
-        {
-            [[UIColor colorWithRed:12/255. green:12/255. blue:12/255. alpha:1.0] set];
-            UIRectFrame(CGRectMake(0,1,self.bounds.size.width-1,self.bounds.size.height-1));
-            [[UIColor colorWithRed:64/255. green:62/255. blue:54/255. alpha:1.0] set];
-            UIRectFrame(self.bounds);
-        }
-        else
-        {
-            [[UIColor colorWithRed:240/255. green:240/255. blue:240/255. alpha:1.0] set];
-            UIRectFrame(CGRectMake(0,1,self.bounds.size.width-1,self.bounds.size.height-1));
-            [[UIColor colorWithRed:176/255. green:176/255. blue:176/255. alpha:1.0] set];
-            UIRectFrame(self.bounds);
-        }
-    } else
-    {
-        [backgroungImage drawInRect:self.bounds];
+    dotsPoint.x += _tileDotOffset.x;
+    dotsPoint.y += _tileDotOffset.y;
+
+    UIImage * backgroundImage = [self backgroundImageForState:self.state];
+    if(backgroundImage) {
+        [backgroundImage drawInRect:self.bounds];
     }
-    */
 
     [titleColor set];
     CGContextSetShadowWithColor(UIGraphicsGetCurrentContext(), titleShadowOffset, 0.0, titleShadowColor.CGColor);
 
     [titleText drawAtPoint:titlePoint withFont:titleFont];
-    if (self.numberOfDots > 0)
+    if (self.numberOfDots > 0) {
+        [dotColor set];
+        CGContextSetShadowWithColor(UIGraphicsGetCurrentContext(), CGSizeZero, 0.0, titleShadowColor.CGColor);
         [dotsText drawAtPoint:dotsPoint withFont:dotsFont];
+    }
 }
-
+/*
 - (void)layoutSubviews
 {
     NSMutableDictionary *stateSizeImageDict = [[self class] stateSizeImageDict];
@@ -252,6 +262,7 @@
     self.backgroundColor = [UIColor colorWithPatternImage:resizedImage];
     [super layoutSubviews];
 }
+*/
 
 #pragma mark -
 #pragma mark Control properties overloading

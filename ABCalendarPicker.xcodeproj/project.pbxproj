@@ -31,8 +31,8 @@
 		259BA22315B3484000079C27 /* GradientBar.png in Resources */ = {isa = PBXBuildFile; fileRef = 259BA22215B3484000079C27 /* GradientBar.png */; };
 		25BC51E416D8026F004E444D /* ABCalendarPickerDefaultTripleWeekdaysProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 25BC51E216D8026F004E444D /* ABCalendarPickerDefaultTripleWeekdaysProvider.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25BC51E516D8026F004E444D /* ABCalendarPickerDefaultTripleWeekdaysProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25BC51E316D8026F004E444D /* ABCalendarPickerDefaultTripleWeekdaysProvider.m */; };
-		25DA123515E8DD530067F6EB /* UIMyButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 25DA123315E8DD530067F6EB /* UIMyButton.h */; };
-		25DA123615E8DD530067F6EB /* UIMyButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DA123415E8DD530067F6EB /* UIMyButton.m */; };
+		25DA123515E8DD530067F6EB /* ABCalendarPickerCellButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 25DA123315E8DD530067F6EB /* ABCalendarPickerCellButton.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25DA123615E8DD530067F6EB /* ABCalendarPickerCellButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DA123415E8DD530067F6EB /* ABCalendarPickerCellButton.m */; };
 		25DDA87015AA22A80049B532 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25DDA86F15AA22A80049B532 /* Foundation.framework */; };
 		25DDA87715AA22A80049B532 /* ABCalendarPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DDA87615AA22A80049B532 /* ABCalendarPicker.m */; };
 		25DDA87F15AA22A80049B532 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25DDA87E15AA22A80049B532 /* SenTestingKit.framework */; };
@@ -110,8 +110,8 @@
 		259BA22215B3484000079C27 /* GradientBar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GradientBar.png; sourceTree = "<group>"; };
 		25BC51E216D8026F004E444D /* ABCalendarPickerDefaultTripleWeekdaysProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ABCalendarPickerDefaultTripleWeekdaysProvider.h; sourceTree = "<group>"; };
 		25BC51E316D8026F004E444D /* ABCalendarPickerDefaultTripleWeekdaysProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ABCalendarPickerDefaultTripleWeekdaysProvider.m; sourceTree = "<group>"; };
-		25DA123315E8DD530067F6EB /* UIMyButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIMyButton.h; sourceTree = "<group>"; };
-		25DA123415E8DD530067F6EB /* UIMyButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIMyButton.m; sourceTree = "<group>"; };
+		25DA123315E8DD530067F6EB /* ABCalendarPickerCellButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ABCalendarPickerCellButton.h; sourceTree = "<group>"; };
+		25DA123415E8DD530067F6EB /* ABCalendarPickerCellButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ABCalendarPickerCellButton.m; sourceTree = "<group>"; };
 		25DDA86C15AA22A80049B532 /* libABCalendarPicker.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libABCalendarPicker.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		25DDA86F15AA22A80049B532 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		25DDA87315AA22A80049B532 /* ABCalendarPicker-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ABCalendarPicker-Prefix.pch"; sourceTree = "<group>"; };
@@ -257,8 +257,8 @@
 				25DDA87615AA22A80049B532 /* ABCalendarPicker.m */,
 				25DDA89B15AA23290049B532 /* Protocols */,
 				25DDA89A15AA23230049B532 /* Providers */,
-				25DA123315E8DD530067F6EB /* UIMyButton.h */,
-				25DA123415E8DD530067F6EB /* UIMyButton.m */,
+				25DA123315E8DD530067F6EB /* ABCalendarPickerCellButton.h */,
+				25DA123415E8DD530067F6EB /* ABCalendarPickerCellButton.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -351,7 +351,7 @@
 				25DDA8CD15AA297C0049B532 /* ABCalendarPickerDefaultErasProvider.h in Headers */,
 				25DDA8CE15AA297D0049B532 /* ABCalendarPickerDefaultMonthsProvider.h in Headers */,
 				25DDA8F415AA2AD60049B532 /* ABViewPool.h in Headers */,
-				25DA123515E8DD530067F6EB /* UIMyButton.h in Headers */,
+				25DA123515E8DD530067F6EB /* ABCalendarPickerCellButton.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -525,7 +525,7 @@
 				25DDA8B015AA236A0049B532 /* ABCalendarPickerDefaultYearsProvider.m in Sources */,
 				25DDA8F515AA2AD60049B532 /* ABViewPool.m in Sources */,
 				254FD26C15BDBCC700C82DF8 /* ABCalendarPickerDefaultStyleProvider.m in Sources */,
-				25DA123615E8DD530067F6EB /* UIMyButton.m in Sources */,
+				25DA123615E8DD530067F6EB /* ABCalendarPickerCellButton.m in Sources */,
 				25BC51E516D8026F004E444D /* ABCalendarPickerDefaultTripleWeekdaysProvider.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

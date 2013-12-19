@@ -9,7 +9,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "ABViewPool.h"
 #import "ABCalendarPickerDefaultStyleProvider.h"
-#import "UIMyButton.h"
+#import "ABCalendarPickerCellButton.h"
 
 #define UP_ARROW_STRING @"▲"
 #define DOWN_ARROW_STRING @"▼"
@@ -157,7 +157,7 @@
 {
     _normalImage = image;
     [self.controlsPool clear];
-    [[UIMyButton stateSizeImageDict] removeAllObjects];
+    [[ABCalendarPickerCellButton stateSizeImageDict] removeAllObjects];
 }
 
 - (UIImage *)selectedImage
@@ -171,7 +171,7 @@
 {
     _selectedImage = image;
     [self.controlsPool clear];
-    [[UIMyButton stateSizeImageDict] removeAllObjects];
+    [[ABCalendarPickerCellButton stateSizeImageDict] removeAllObjects];
 }
 
 - (UIImage *)highlightedImage
@@ -186,7 +186,7 @@
 {
     _highlightedImage = image;
     [self.controlsPool clear];
-    [[UIMyButton stateSizeImageDict] removeAllObjects];
+    [[ABCalendarPickerCellButton stateSizeImageDict] removeAllObjects];
 }
 
 - (UIImage *)selectedHighlightedImage
@@ -201,7 +201,7 @@
 {
     _selectedHighlightedImage = image;
     [self.controlsPool clear];
-    [[UIMyButton stateSizeImageDict] removeAllObjects];
+    [[ABCalendarPickerCellButton stateSizeImageDict] removeAllObjects];
 }
 
 - (UIColor *)normalTextColor
@@ -215,7 +215,7 @@
 {
     _normalTextColor = color;
     [self.controlsPool clear];
-    [[UIMyButton stateSizeImageDict] removeAllObjects];
+    [[ABCalendarPickerCellButton stateSizeImageDict] removeAllObjects];
 }
 
 - (UIColor *)disabledTextColor
@@ -229,7 +229,7 @@
 {
     _disabledTextColor = color;
     [self.controlsPool clear];
-    [[UIMyButton stateSizeImageDict] removeAllObjects];
+    [[ABCalendarPickerCellButton stateSizeImageDict] removeAllObjects];
 }
 
 - (UIColor *)selectedTextColor
@@ -243,7 +243,7 @@
 {
     _selectedTextColor = color;
     [self.controlsPool clear];
-    [[UIMyButton stateSizeImageDict] removeAllObjects];
+    [[ABCalendarPickerCellButton stateSizeImageDict] removeAllObjects];
 }
 
 - (UIColor *)normalTextShadowColor
@@ -257,7 +257,7 @@
 {
     _normalTextShadowColor = color;
     [self.controlsPool clear];
-    [[UIMyButton stateSizeImageDict] removeAllObjects];
+    [[ABCalendarPickerCellButton stateSizeImageDict] removeAllObjects];
 }
 
 - (UIColor *)disabledTextShadowColor
@@ -271,7 +271,7 @@
 {
     _disabledTextShadowColor = color;
     [self.controlsPool clear];
-    [[UIMyButton stateSizeImageDict] removeAllObjects];
+    [[ABCalendarPickerCellButton stateSizeImageDict] removeAllObjects];
 }
 
 - (UIColor *)selectedTextShadowColor
@@ -285,7 +285,7 @@
 {
     _selectedTextShadowColor = color;
     [self.controlsPool clear];
-    [[UIMyButton stateSizeImageDict] removeAllObjects];
+    [[ABCalendarPickerCellButton stateSizeImageDict] removeAllObjects];
 }
 
 - (CGSize)normalTextShadowPosition
@@ -299,7 +299,7 @@
 {
     _normalTextShadowPosition = position;
     [self.controlsPool clear];
-    [[UIMyButton stateSizeImageDict] removeAllObjects];
+    [[ABCalendarPickerCellButton stateSizeImageDict] removeAllObjects];
 }
 
 - (CGSize)disabledTextShadowPosition
@@ -313,7 +313,7 @@
 {
     _disabledTextShadowPosition = position;
     [self.controlsPool clear];
-    [[UIMyButton stateSizeImageDict] removeAllObjects];
+    [[ABCalendarPickerCellButton stateSizeImageDict] removeAllObjects];
 }
 
 - (CGSize)selectedTextShadowPosition
@@ -327,15 +327,15 @@
 {
     _selectedTextShadowPosition = position;
     [self.controlsPool clear];
-    [[UIMyButton stateSizeImageDict] removeAllObjects];
+    [[ABCalendarPickerCellButton stateSizeImageDict] removeAllObjects];
 }
 
 - (UIControl *)calendarPicker:(ABCalendarPicker *)calendarPicker
              cellViewForTitle:(NSString *)cellTitle
                      andState:(ABCalendarPickerState)state
 {
-    UIMyButton *button = (UIMyButton *) [self.controlsPool giveExistingOrCreateNewWith:^{
-        UIMyButton *button = [[UIMyButton alloc] init];
+    ABCalendarPickerCellButton *button = (ABCalendarPickerCellButton *) [self.controlsPool giveExistingOrCreateNewWith:^{
+        ABCalendarPickerCellButton *button = [[ABCalendarPickerCellButton alloc] init];
         button.tileTitleFont = self.tileTitleFont;
         button.tileDotFont = self.tileDotFont;
         button.opaque = YES;
@@ -397,7 +397,7 @@
             && state != ABCalendarPickerStateWeekdays)
         return;
 
-    UIMyButton *button = (UIMyButton *) control;
+    ABCalendarPickerCellButton *button = (ABCalendarPickerCellButton *) control;
     button.numberOfDots = MIN(self.maxNumberOfDots, eventsCount);
 }
 
