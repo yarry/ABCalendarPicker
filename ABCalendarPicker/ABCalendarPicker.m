@@ -1113,7 +1113,8 @@ static const int DefaultGradientBarHeight = 50;
 
     if (state == ABCalendarPickerStateDays
             && [(id) self.dataSource respondsToSelector:@selector(calendarPicker:numberOfEventsForDate:onState:)]) {
-        [self performSelector:@selector(updateDotsForProvider:) withObject:provider afterDelay:0.0];
+        //[self performSelector:@selector(updateDotsForProvider:) withObject:provider afterDelay:0.0];
+        [self updateDotsForProvider:provider];
     }
 
     if (state == ABCalendarPickerStateWeekdays
